@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Draggable element</title>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<style>
+	#drag {
+		width: 150px;
+		height: 150px;
+		padding: 10px; 
+		z-index:9;
+		cursor: all-scroll;
+		color:#fff;
+		background-color: green;
+	}
+
+	.other{
+		width:90%;
+		position:relative;
+		padding: 10px;
+		background-color: rgb(255, 0, 0);
+		color:#fff;
+		z-index: 0;
+		margin-top:10px;
+	}
+	</style>
+</head>
+<body>
+ 
+	<div id="drag" class="ui-widget-content">
+	Drag this div
+	</div>
+
+	<div class="other">
+	<h4>Other elements </h4>
+	Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
+	</div>
+	
+	<script>
+	$( function() {
+		$("#drag").draggable();
+	});
+	</script>
+
+</body>
+</html>

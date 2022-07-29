@@ -1,0 +1,10 @@
+<div id="toolbar">
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="anime.toolbar.add()">Add</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="anime.toolbar.edit()">Edit</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-help',plain:true">Help</a>
+	<a href="#" data-options="iconCls:'icon-save',plain:true"></a>
+</div>
+<table id="datagrid"></table>
+<script>
+	$.getScript("/manager/anime.js", function(data, textStatus, jqxhr) { anime.init(); });
+</script>

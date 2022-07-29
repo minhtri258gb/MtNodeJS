@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+<title>General MIDI Sounds</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="keywords" content="General MIDI, sound, program" />
+<meta name="description" content="Interactive chart of General MIDI programs" />
+<meta http-equiv="X-UA-Compatible" content="requiresActiveX=true"/>
+<script src="https://cdn.jsdelivr.net/npm/jzz"></script>
+<script src="https://cdn.jsdelivr.net/npm/jzz-midi-gm"></script>
+<script src="https://cdn.jsdelivr.net/npm/jzz-synth-tiny"></script>
+<script src="https://cdn.jsdelivr.net/npm/jzz-input-kbd"></script>
+<link rel="stylesheet" type="text/css" href="../style.css" />
+
+<style type="text/css">
+.tab {
+ font-family:"Courier New",Courier,monospace;
+ max-width:80em;
+ -webkit-touch-callout:none;
+ -webkit-user-select:none;
+ -khtml-user-select:none;
+ -moz-user-select:none;
+ -ms-user-select:none;
+ user-select:none;
+}
+.tab .col {
+ display:inline-block;
+ background-color:#eee;
+ vertical-align:top;
+ width:17em;
+ margin:.2em;
+ padding:.2em;
+}
+.hdr {
+ text-align:center;
+ font-weight:bold;
+ text-decoration:underline;
+ padding:.5em
+}
+.sel {
+ background-color:#bbb;
+}
+</style>
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+<script src="/js/ads-prebid.js" onerror="abc()"></script>
+<script src="/js/prebid.js" onerror="abc()"></script>
+</head>
+
+<body>
+<div class=header>
+<div id=JazzLogo><div class=ebony>
+<span id=61_></span><span id=63_></span><span class=break></span><span id=66_></span><span id=68_></span><span id=70_></span>
+</div><div class=ivory>
+<span id=60_></span><span id=62_></span><span id=64_></span><span id=65_></span><span id=67_></span><span id=69_></span><span id=71_></span>
+</div>
+</div>
+<a href=https://github.com/sponsors/jazz-soft target=_blank><img id=donate src=/img/gheart.png alt=sponsor></a>
+<div id="title">Jazz-Soft.net</div>
+<div id="motto">We make it sound!</div>
+</div>
+<div class=links>
+<a href=https://jazz-soft.net> Jazz-Soft </a>
+<a href=https://jazz-soft.net/download> Download </a>
+<a href=https://jazz-soft.net/doc> Documentation </a>
+<a href=https://www.facebook.com/midi.javascript target=_blank> Community </a>
+<a class=right href=https://jazz-soft.net/sema> about the developer... </a>
+</div>
+<div class="adv"><div class="ads" id="panel">
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1270703683405367" crossorigin="anonymous" onerror="abc()"></script>
+<ins class="adsbygoogle ggg"
+  data-ad-client="ca-pub-1270703683405367"
+  data-ad-slot="4952279820"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div></div>
+
+<div class=path>
+<a href=..>Home</a> &raquo;
+<a href=.>Examples</a> &raquo;
+General MIDI Sounds
+</div>
+
+<h1>General MIDI Program Chart</h1>
+
+<p>MIDI Out: <select id=midiout></select> &nbsp;(<em>note: not all instruments support General MIDI</em>)</p>
+<p id=note>If you don't see any General MIDI instrument, please consider installing <a href=../download/Jazz-Plugin>Jazz-Plugin</a>!</p>
+<div id=piano></div>
+<div id=list class=tab></div>
+
+<script><!--
+var current_program = 0;
+var current_out_name;
+var plugin_installed;
+var rows = [];
+var listbox = document.getElementById('midiout');
+function set_listbox(s) {
+  for (var i = 0; i < listbox.options.length; i++) {
+    if (listbox.options[i].value == s) listbox.options[i].selected = 1;
+  }
+}
+JZZ().and(function() {
+  var outs = this.info().outputs;
+  for (var i = 0; i < outs.length; i++) {
+    listbox[i] = new Option(outs[i].name, outs[i].name);
+    if (outs[i].engine == 'crx' || outs[i].engine == 'plugin') plugin_installed = true;
+  }
+  if (!outs.length) listbox[0] = new Option('Not found', 'Not found');
+  if (plugin_installed) {
+    var note = document.getElementById('note');
+    if (note) note.parentNode.removeChild(note);
+  }
+});
+var current_out = JZZ().openMidiOut().and(function(){
+  current_out_name = this.info().name;
+  set_listbox(current_out_name);
+});
+function changemidi() {
+  var name = listbox.options[listbox.selectedIndex].value;
+  if (name == current_out_name) return;
+  JZZ().openMidiOut(name).or(function(){
+    set_listbox(current_out_name);
+  }).and(function(){
+    piano.disconnect(current_out);
+    //current_out.close();
+    current_out = this;
+    current_out_name = name;
+    piano.connect(current_out);
+    piano.program(0, current_program);
+  });
+}
+listbox.addEventListener('change', changemidi);
+var piano = JZZ.input.Kbd({
+  at:'piano', ww: 18, bw: 10, wl: 100, bl: 70, from: 'F4', to: 'B6',
+  530: {from: 'B2', to: 'A6'},
+  690: {from: 'D2', to: 'E7'},
+  960: {from: 'A1', to: 'C9'},
+  onCreate: function() { this.getWhiteKeys().setStyle({backgroundColor:'#ffe'}, {}); }
+});
+piano.connect(current_out);
+JZZ.input.ASCII({
+  1: 'Eb4', 3: 'F#4', 4: 'G#4', 5: 'A#4', 7: 'C#5', 8: 'D#5', 0: 'F#5', '-': 'G#5', '+': 'A#5',
+  Q: 'E4', W: 'F4', E:'G4', R: 'A4', T: 'B4', Y: 'C5', U: 'D5', I: 'E5', O: 'F5', P: 'G5', '[': 'A5', ']': 'B5',
+  S: 'C#6', D: 'D#6', G: 'F#6', H: 'G#6', J: 'A#6', L: 'C#7', ':': 'D#7',
+  Z: 'C6', X: 'D6', C: 'E6', V: 'F6', B: 'G6', N: 'A6', M: 'B6', '<': 'C7', '>': 'D7', '?': 'E7'
+}).connect(piano);
+
+function click(n) {
+  rows[current_program].className = '';
+  rows[n].className = 'sel';
+  current_program = n;
+  piano.program(0, n);
+  piano.noteOn(0, 60, 127);
+  window.setTimeout(function(){ piano.noteOff(0, 60);}, 500);
+}
+function bind(n) { return function(){ click(n);}; }
+
+for (var g = 0; g < 16; g++) {
+  var col = document.createElement('div');
+  col.className = 'col';
+  var hdr = document.createElement('div');
+  hdr.className = 'hdr';
+  hdr.innerHTML = JZZ.MIDI.groupName(g * 8);
+  col.appendChild(hdr);
+  for (var i = 0; i < 8; i++) {
+    var n = g * 8 + i;
+    var row = document.createElement('div');
+    var num = document.createElement('div');
+    var num = n < 10 ? '&nbsp;&nbsp;' + n : n < 100 ? '&nbsp;' + n : n;
+    row.innerHTML = num + ' ' + JZZ.MIDI.programName(n);
+    rows[n] = row;
+    row.addEventListener("mousedown", bind(n));
+    col.appendChild(row);
+  }
+  document.getElementById('list').appendChild(col);
+}
+--></script>
+
+<h2>See also</h2>
+<ul>
+<li><a href=GeneralMidiPerc.html>General MIDI Percussion</a></li>
+</ul>
+
+<div class=footer>
+(C) 2011-21 Jazz-Soft
+</div>
+<script>
+function onLogo() {
+ if (JZZ().info().engine == 'none') {
+  var allcookies=document.cookie;
+  var cookies=allcookies.split(';');
+  var cookie=null;
+  var show = 1;
+  if (typeof navigator === 'undefined' || (navigator.userAgent.indexOf('Windows')==-1 && navigator.userAgent.indexOf('Linux')==-1 && navigator.userAgent.indexOf('Macintosh')==-1)) {
+   show = 0;
+  }
+  else {
+   for(var i=0;i<cookies.length;i++){
+    cookie=cookies[i];
+    if(cookie.charAt(0)==" ") cookie=cookie.substring(1);
+    if(cookie.substring(0,11)=="jazz_alert=") show=0;
+   }
+  }
+  if(show){
+   var logo=document.getElementById('JazzLogo');
+   var msg=document.createElement('span');
+   msg.className='msg';
+   msg.innerHTML='This piano could play better<br>if you enable <a href=/download/Jazz-Plugin/index.html>Jazz-Plugin</a> ...';
+   logo.appendChild(msg);
+   setTimeout(function(){logo.removeChild(msg);}, 6000);
+   document.cookie="jazz_alert=1;path=/";
+  }
+ }
+ onLogo=function(){};
+}
+JZZ.synth.Tiny.register('Web Audio');
+var logo=JZZ.input.Kbd({chan:15,keys:[['60_',60],['61_',61],['62_',62],['63_',63],['64_',64],['65_',65],['66_',66],['67_',67],['68_',68],['69_',69],['70_',70],['71_',71]],onCreate:function(){
+ this.getWhiteKeys().setStyle({backgroundColor:'#ffe'},{backgroundColor:'#aaa'}); this.getBlackKeys().setStyle({backgroundColor:'#111'},{backgroundColor:'#aaa'});
+}}).connect(JZZ().openMidiOut(/^((?!Midi Through).)*$/i)).connect(function(msg){onLogo();});
+</script>
+</body>
+</html>

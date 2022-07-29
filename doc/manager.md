@@ -1,0 +1,3 @@
+
+* fix nhấn nút anime nếu mở anime rồi sẽ bật tại task đó ko mở thêm task mới
+> ...

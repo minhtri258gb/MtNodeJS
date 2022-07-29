@@ -1,0 +1,10 @@
+<script src='../js//JZZ.js'></script>
+<script src='../js//MIDI.js'></script>
+<script src='../js//JZZ.synth.MIDIjs.js'></script>
+<script>
+JZZ.synth.MIDIjs({ soundfontUrl: "./soundfont/", instrument: "acoustic_grand_piano" })
+   .note(0, 'C5', 127, 500).wait(500)
+   .note(0, 'E5', 127, 500).wait(500)
+   .note(0, 'G5', 127, 500).wait(500)
+   .note(0, 'C6', 127, 500);
+</script>

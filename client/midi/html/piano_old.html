@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Virtual Piano</title>
+<script src="../js/JZZ.js"></script>
+<script src="../js/JZZ.synth.Tiny.js"></script>
+<script src="../js/JZZ.input.Kbd.js"></script>
+</head>
+
+<body>
+<h1>Virtual Piano</h1>
+
+<div id=piano></div>
+
+<button onclick='play();'>Play!</button>
+
+<script>
+
+
+JZZ.synth.Tiny.register();
+
+
+let JZZIns = JZZ();
+let MidiOut = JZZIns.openMidiOut();
+
+
+let inputKbd = JZZ.input.Kbd({
+	at:'piano',
+	from:'C4',
+	to:'B7'
+});
+
+// inputKbd.and(function() {
+// 	this.getKeys().setStyle({ borderColor:'#080' });
+// 	this.getBlackKeys().setStyle({ backgroundColor:'#0f0' }, { backgroundColor:'#8f8' });
+
+// 	console.log(this.getBlackKeys());
+// });
+
+let wut = inputKbd.connect(MidiOut);
+
+function press(key)
+{
+	console.log(key);
+	return key;
+}
+
+let isPress = false;
+	
+let map = {
+	Z:'C4', A:'C5', Q:'C6', 1:'C7',
+	X:'D4', S:'D5', W:'D6', 2:'D7',
+	C:'E4', D:'E5', E:'E6', 3:'E7',
+	V:'F4', F:'F5', R:'F6', 4:'F7',
+	B:'G4', G:'G5', T:'G6', 5:'G7',
+	N:'A4', H:'A5', Y:'A6', 6:'A7',
+	M:'B4', J:'B5', U:'B6', 7:'B7',
+
+	'\\': changeTab
+	
+	// Q:'A6', W:'B6', E:'C6', R:'D6', T:'E6', Y:'F6',
+	// A:'F#4', Z:'G4', S:'G#4', X:'A4', D:'Bb4', C:'B4', V:'C5', G:'C#5', B:'D5',
+	// H:'D#5', N:'E5', M:'F5', K:'F#5', '<':'G5', L:'G#5', '>':'A5', ':':'Bb5',
+	// 1:'F#4', '`':'F#4', '\t':'F#4',
+};
+
+
+var inputASCII = JZZ.input.ASCII(map);
+console.log(inputASCII);
+
+inputASCII.connect(wut);
+
+function changeTab(on) {
+
+	// if (isPress != on)
+	// {
+	// 	if (on)
+	// 	{
+	// 		inputASCII1.disconnect(wut);
+	// 		inputASCII2.connect(wut);
+	// 	}
+	// 	else
+	// 	{
+	// 		inputASCII2.disconnect(wut);
+	// 		inputASCII1.connect(wut);
+	// 	}
+	// 	isPress = on;
+	// }
+}
+
+function play() {
+	JZZ.util.iosSound();
+	piano.noteOn(0, 'C5', 120).wait(300).noteOff(0, 'C5')
+		.noteOn(0, 'E5', 100).wait(300).noteOff(0, 'E5')
+		.noteOn(0, 'G5', 100).wait(300).noteOff(0, 'G5')
+		.noteOn(0, 'C6', 120).wait(300).noteOff(0, 'C6')
+		.noteOn(0, 'G5', 100).wait(300).noteOff(0, 'G5')
+		.noteOn(0, 'E5', 100).wait(300).noteOff(0, 'E5')
+		.noteOn(0, 'C5', 120).wait(500).noteOff(0, 'C5');
+}
+
+
+</script>
+
+</body>
+</html>

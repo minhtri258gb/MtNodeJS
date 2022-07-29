@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>REGANAM</title>
+
+	<meta charset="utf-8">
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+
+	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="/manager/style.css">
+
+	<script type="text/javascript" src="/lib/jquery/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="/lib/easyui/jquery.easyui.min.js"></script>
+	<!-- <script type="text/javascript" src="/common/js/Config.js"></script> -->
+	<script type="text/javascript" src="/manager/manager.js"></script>
+</head>
+
+<body>
+	<div id="tab" class="easyui-tabs" data-options="fit:true">
+		<!-- Manager Tab -->
+		<div title="Manager" data-options="iconCls:'icon-manager'" style="padding:20px;display:none;">
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="manager.c_tab.addAnime()">Anime</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="manager.c_tab.addFilm()">Film</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="manager.c_tab.addMovie()">Movie</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="manager.c_tab.addManga()">Manga</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="manager.c_tab.addGame()">Game</a>
+			<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="manager.c_tab.addAccount()">Account</a>
+		</div>
+	</div>
+	<script>
+		manager.init();
+		// debugger
+		// setTimeout(() => { manager.c_tab.addAnime(); }, 200);
+	</script>
+</body>
+
+</html>
