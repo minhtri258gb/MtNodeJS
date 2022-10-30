@@ -36,7 +36,6 @@ var manager = {
 					}
 				}]
 			});
-			$.getScript("/manager/film.js", function( data, textStatus, jqxhr ) { story.init(); });
 		},
 		addMovie: function() {
 			this.component.tabs('add', {
@@ -50,7 +49,6 @@ var manager = {
 					}
 				}]
 			});
-			$.getScript("/manager/movie.js", function( data, textStatus, jqxhr ) { story.init(); });
 		},
 		addManga: function() {
 			this.component.tabs('add', {
@@ -64,7 +62,6 @@ var manager = {
 					}
 				}]
 			});
-			$.getScript("/manager/manga.js", function( data, textStatus, jqxhr ) { story.init(); });
 		},
 		addGame: function() {
 			this.component.tabs('add', {
@@ -78,7 +75,6 @@ var manager = {
 					}
 				}]
 			});
-			$.getScript("/manager/game.js", function( data, textStatus, jqxhr ) { story.init(); });
 		},
 		addAccount: function() {
 			this.component.tabs('add', {
@@ -92,7 +88,6 @@ var manager = {
 					}
 				}]
 			});
-			$.getScript("/manager/account.js", function( data, textStatus, jqxhr ) { story.init(); });
 		},
 	},
 

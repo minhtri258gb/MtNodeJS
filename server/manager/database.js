@@ -18,6 +18,10 @@ var database = {
 		mt.lib.sqlite.close();
 	},
 
+	query: function(sql) {
+		return mt.lib.sqlite.run(sql);
+	},
+
 	insert: function(table, data) {
 		// let struct = this.struct[table];
 		// let sKey = '', sParam = '';
@@ -83,29 +87,91 @@ var database = {
 		// });
 	},
 
-	selectPagination: function(table, page, rows) {
+	anime: {
 
-		let offset = (page-1) * rows;
-		let sql = "SELECT * FROM "+table+" ORDER BY id DESC LIMIT "+rows+" OFFSET "+offset;
-		return mt.lib.sqlite.run(sql);
+		search: function(filter) {
+			
+			// SQL, Filter
+			let sql = "SELECT * FROM anime WHERE 1=1";
+			if (filter.text && filter.text.length > 0) {
+				sql += " and name LIKE '%" + filter.text + "%'";
+			}
 
-		// let sql = "SELECT * FROM " + table + ";";
-		// db.get(sql, [], callback
-		// [key],
-		// function(err, row) { 
-		// 	if(row == undefined)
-		// 		callback("Something wrong");
-		// 	else if(err) 
-		// 		callback(err);
-		// 	else
-		// 		callback(null, row);
-		// });
+			// Sql Count
+			let sqlCount = "SELECT count(id) n FROM ("+sql+")";
+
+			// Sort
+			if (filter.sort) {
+				if (!filter.order) filter.order = 'asc'
+				sql += " ORDER BY " + filter.sort + " " + filter.order;
+			} else {
+				sql += " ORDER BY id DESC";
+			}
+
+			// KPaging
+			if (filter.page && filter.rows) {
+				let offset = (filter.page-1) * filter.rows;
+				sql += " LIMIT " + filter.rows + " OFFSET " + offset;
+			}
+			
+			// Query
+			database.connect();
+			let total = database.query(sqlCount)[0].n;
+			let rows = database.query(sql);
+			database.disconnect();
+
+			return { total: total, rows: rows };
+		}
+
 	},
 
-	count: function(table) {
-		let sql = "SELECT count(id) n FROM " + table;
-		let result = mt.lib.sqlite.run(sql);
-		return result[0].n;
+	account: {
+
+		search: function(filter) {
+
+			// SQL, Filter
+			let sql = "SELECT * FROM account WHERE 1=1";
+			if (filter.text && filter.text.length > 0) {
+				sql += " and name LIKE '%" + filter.text + "%'";
+			}
+
+			// Sql Count
+			let sqlCount = "SELECT count(id) n FROM ("+sql+")";
+
+			// Sort, KPaging
+			if (filter.sort) {
+				if (!filter.order) filter.order = 'asc'
+				sql += " ORDER BY " + filter.sort + " " + filter.order;
+			} else {
+				sql += " ORDER BY id DESC";
+			}
+			if (filter.page && filter.rows) {
+				let offset = (filter.page-1) * filter.rows;
+				sql += " LIMIT " + filter.rows + " OFFSET " + offset;
+			}
+			
+			// Query
+			database.connect();
+			let total = database.query(sqlCount)[0].n;
+			let rows = database.query(sql);
+			database.disconnect();
+
+			return { total: total, rows: rows };
+		},
+
+		save: function(data) {
+			database.connect();
+			if (data.id == 0) {
+				delete data.id;
+				mt.lib.sqlite.insert("account", data, function(newID) {});
+			} else {
+				let id = data.id;
+				delete data.id;
+				var rows_modified = mt.lib.sqlite.update("account", data, {id:id});
+			}
+			database.disconnect();
+		}
+
 	}
 
 };

@@ -105,6 +105,44 @@ var database = {
 
 	getMusicByName: function(name) {
 		return mt.lib.sqlite.run("SELECT * FROM music WHERE name = \""+name+"\"");
+	},
+
+	music: {
+		getById: function(id) {
+			database.connect();
+			let datas = mt.lib.sqlite.run("SELECT * FROM music WHERE id = " + id);
+			database.disconnect();
+			return datas[0] || null;
+		},
+		insertTrack: function(id) {
+			database.connect();
+
+			// Lấy dữ liệu bài
+			let res = mt.lib.sqlite.run("SELECT * FROM music WHERE id = " + id);
+			if (res.length == 0) {
+				database.disconnect();
+				throw "Không tìm thấy ID bài hát";
+			}
+			let music = res[0];
+
+			// Tìm xem có track chưa
+			let trackname = music.name + " (track)";
+			res = mt.lib.sqlite.run("SELECT * FROM music WHERE name = \""+trackname+"\"");
+			if (res.length > 0) {
+				database.disconnect();
+				throw "Bài hát đã có track";
+			}
+
+			// Intert
+			mt.lib.sqlite.insert("music", {
+				name: trackname,
+				decibel: music.decibel,
+				tag: music.tag
+			}, function(newID) {});
+
+			// Done
+			database.disconnect();
+		}
 	}
 
 };

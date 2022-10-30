@@ -12,7 +12,7 @@ var anime = {
 	c_datagrid: {
 		component: null,
 		init: function() {
-			this.component = $('#datagrid');
+			this.component = $('#datagridAnime');
 			this.initDataGrid();
 		},
 		initDataGrid: function() {
@@ -47,35 +47,35 @@ var anime = {
 
 			this.component.datagrid({
 				url: '/manager/anime/search',
-				toolbar: '#toolbar',
+				toolbar: '#toolbarAnime',
 				rownumbers: true,
 				singleSelect: true,
 				pagination: true,
 				pageSize: 10,
 				columns: [[
-					{field:'name', title:'Name', editor:{type:'textbox'}},
-					{field:'story', title:'Story', width:60, align:'center', editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
+					{field:'name', title:'Name', sortable:true, editor:{type:'textbox'}},
+					{field:'story', title:'Story', width:60, align:'center', sortable:true, editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
 						return '<span class="rating l-btn-icon icon-rating'+v+'" style="position:initial;margin-top:6px"></span>';
 					}},
-					{field:'art', title:'Art', width:60, align:'center', editor: {type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
+					{field:'art', title:'Art', width:60, align:'center', sortable:true, editor: {type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
 						return '<span class="rating l-btn-icon icon-rating'+v+'" style="position:initial;margin-top:6px"></span>';
 					}},
-					{field:'sound', title:'Sound', width:60, align:'center', editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
+					{field:'sound', title:'Sound', width:60, align:'center', sortable:true, editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
 						return '<span class="rating l-btn-icon icon-rating'+v+'" style="position:initial;margin-top:6px"></span>';
 					}},
-					{field:'fantasy', title:'Fantasy', width:60, align:'center', editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
+					{field:'fantasy', title:'Fantasy', width:60, align:'center', sortable:true, editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
 						return '<span class="rating l-btn-icon icon-rating'+v+'" style="position:initial;margin-top:6px"></span>';
 					}},
-					{field:'sad', title:'Sad', width:60, align:'center', editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
+					{field:'sad', title:'Sad', width:60, align:'center', sortable:true, editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
 						return '<span class="rating l-btn-icon icon-rating'+v+'" style="position:initial;margin-top:6px"></span>';
 					}},
-					{field:'joke', title:'Joke', width:60, align:'center', editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
+					{field:'joke', title:'Joke', width:60, align:'center', sortable:true, editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
 						return '<span class="rating l-btn-icon icon-rating'+v+'" style="position:initial;margin-top:6px"></span>';
 					}},
-					{field:'brand', title:'Brand', width:60, align:'center', editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
+					{field:'brand', title:'Brand', width:60, align:'center', sortable:true, editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
 						return '<span class="rating l-btn-icon icon-rating'+v+'" style="position:initial;margin-top:6px"></span>';
 					}},
-					{field:'review', title:'Review', width:60, align:'center',
+					{field:'review', title:'Review', width:60, align:'center', sortable:true,
 						formatter: function(v,r,i) {
 							return '<span class="rating l-btn-icon icon-rating'+v+'" style="position:initial;margin-top:6px"></span>';
 						},
@@ -102,11 +102,13 @@ var anime = {
 					anime.rowSel = index;
 				}
 			});
+		},
+		search: function(text) {
+			this.component.datagrid('reload', {text:text});
 		}
 	},
 
 	toolbar: {
-
 		add: function() {
 			if (anime.rowID > -1)
 				return;
@@ -118,7 +120,6 @@ var anime = {
 			dg.datagrid('selectRow', 0).datagrid('beginEdit', 0);
 			anime.rowAction.init();
 		},
-
 		edit: function() {
 			if (anime.rowID > -1)
 				return;
@@ -129,8 +130,10 @@ var anime = {
 			anime.rowID = dg.datagrid('getSelected').id;
 			dg.datagrid('beginEdit', anime.rowSel);
 			anime.rowAction.init();
+		},
+		search: function(text) {
+			anime.c_datagrid.search(text);
 		}
-
 	},
 
 	rowAction: {
@@ -210,5 +213,6 @@ var anime = {
 			anime.rowID = -1;
 		}
 
-	}
+	},
+
 };

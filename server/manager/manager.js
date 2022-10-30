@@ -26,22 +26,11 @@ var manager = {
 		
 		// API
 		mt.core.app.get("/manager/anime", this.anime.getPage);
-		mt.core.app.get("/manager/film", function(req, res) {
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/film.html'));
-		});
-		mt.core.app.get("/manager/movie", function(req, res) {
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/movie.html'));
-		});
-		mt.core.app.get("/manager/manga", function(req, res) {
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/manga.html'));
-		});
-		mt.core.app.get("/manager/game", function(req, res) {
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/game.html'));
-		});
-		mt.core.app.get("/manager/account", function(req, res) {
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/account.html'));
-		});
-
+		mt.core.app.get("/manager/film", this.film.getPage);
+		mt.core.app.get("/manager/movie", this.movie.getPage);
+		mt.core.app.get("/manager/manga", this.manga.getPage);
+		mt.core.app.get("/manager/game", this.game.getPage);
+		mt.core.app.get("/manager/account", this.account.getPage);
 	},
 
 	anime: {
@@ -67,11 +56,20 @@ var manager = {
 				return;
 			}
 
-			manager.database.connect();
-			let total = manager.database.count("anime");
-			let rows = manager.database.selectPagination("anime", req.body.page, req.body.rows);
-			manager.database.disconnect();
-			res.end(JSON.stringify({ total: total, rows: rows }));
+			// Filter
+			let filter = {};
+			if (req.body) {
+				filter = {
+					page: req.body.page || null,
+					rows: req.body.rows || null,
+					sort: req.body.sort || null,
+					order: req.body.order || null,
+					text: req.body.text || null
+				};
+			}
+
+			// Query
+			res.json(manager.database.anime.search(filter));
 		},
 		save: function(req, res) {
 			if (!mt.util.authorize(req)) {
@@ -92,16 +90,113 @@ var manager = {
 		}
 	},
 	
-	film: {},
-	
-	movie: {},
-	
-	manga: {},
-	
-	game: {},
-	
-	account: {},
+	film: {
+		action: false,
+		getPage: function(req, res) {
+			if (!mt.app.manager.film.action) {
+				mt.app.manager.film.action = true;
+				mt.app.manager.film.init();
+			}
+			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/film.html'));
+		},
+		init: function() {
 
+			// Register API
+		},
+	},
+	
+	movie: {
+		action: false,
+		getPage: function(req, res) {
+			if (!mt.app.manager.movie.action) {
+				mt.app.manager.movie.action = true;
+				mt.app.manager.movie.init();
+			}
+			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/movie.html'));
+		},
+		init: function() {
+
+			// Register API
+		},
+	},
+	
+	manga: {
+		action: false,
+		getPage: function(req, res) {
+			if (!mt.app.manager.manga.action) {
+				mt.app.manager.manga.action = true;
+				mt.app.manager.manga.init();
+			}
+			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/manga.html'));
+		},
+		init: function() {
+
+			// Register API
+		},
+	},
+	
+	game: {
+		action: false,
+		getPage: function(req, res) {
+			if (!mt.app.manager.manga.action) {
+				mt.app.manager.manga.action = true;
+				mt.app.manager.manga.init();
+			}
+			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/manga.html'));
+		},
+		init: function() {
+
+			// Register API
+		},
+	},
+	
+	account: {
+		action: false,
+		getPage: function(req, res) {
+			if (!mt.app.manager.account.action) {
+				mt.app.manager.account.action = true;
+				mt.app.manager.account.init();
+			}
+			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/account.html'));
+		},
+		init: function() {
+
+			// Register API
+			mt.core.app.post("/manager/account/search", this.search);
+			mt.core.app.post("/manager/account/save", this.save);
+		},
+		search: function(req, res) {
+
+			// Authorize
+			if (!mt.util.authorize(req)) {
+				res.status(403).send("Access denied");
+				return;
+			}
+
+			// Filter
+			let filter = {};
+			if (req.body) {
+				filter = {
+					page: req.body.page || null,
+					rows: req.body.rows || null,
+					sort: req.body.sort || null,
+					order: req.body.order || null,
+					text: req.body.text || null
+				};
+			}
+
+			// Query
+			res.json(manager.database.account.search(filter));
+		},
+		save: function(req, res) {
+			if (!mt.util.authorize(req)) {
+				res.status(403).send("Access denied");
+				return;
+			}
+			manager.database.account.save(req.body.data);
+			res.end("Success");
+		}
+	},
 
 };
 

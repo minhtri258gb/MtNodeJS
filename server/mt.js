@@ -45,10 +45,7 @@ var mt = {
 		// Register default
 		this.core.app.use("/", this.lib.express.static('./client')); // Static
 		this.core.app.get("/", (req, res) => { // Home
-			if (!mt.config.debug)
-				res.sendFile(this.lib.path.join(__dirname, '../client', '/common/html/home.html'));
-			else
-				res.redirect('/music');
+			res.sendFile(this.lib.path.join(__dirname, '../client', '/common/home.html'));
 		});
 		this.core.app.use(mt.lib.bodyParser.json()); // to support JSON-encoded bodies
 		this.core.app.use(mt.lib.bodyParser.urlencoded({ // to support URL-encoded bodies
