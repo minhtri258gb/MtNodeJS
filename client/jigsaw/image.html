@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>EGAMI</title>
+
+	<meta charset="utf-8">
+	<!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+
+    <link rel="shortcut icon" type="image/png" href="./image/favicon.ico">
+
+	<link rel="stylesheet" type="text/css" href="./lib/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="./lib/easyui/themes/icon.css">
+	<!-- <link rel="stylesheet" type="text/css" href="/imageHandler/style.css"> -->
+
+	<script type="text/javascript" src="./lib/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="./lib/easyui/jquery.easyui.min.js"></script>
+	<!-- <script type="text/javascript" src="./lib/caman/caman.min.js"></script> -->
+	<script type="text/javascript" src="./lib/jimp/jimp.js"></script>
+	<script type="text/javascript" src="./lib/svg/svg.min.js"></script>
+	<script type="text/javascript" src="./lib/interact/interact.min.js"></script>
+	<!-- <script type="text/javascript" src="/common/js/Config.js"></script> -->
+	<script type="text/javascript" src="./image/mt.js"></script>
+</head>
+
+<body class="row" style="background-color:#e4f1fd;">
+
+	<div id="layout" class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'west',title:'Control',split:false,collapsible:false" style="width:256px;">
+			<button id="process" onclick="app.test()">Process</button>
+			<div id="file" style="width:254px;height:126px;line-height:126px;border-style:dashed;text-align:center;border-width:2px;border-color:rgb(136, 136, 136)">Drop file here</div>
+		</div>
+		<div id="content" data-options="region:'center',title:'Piano'" style="background:#eee;">
+			<!-- <canvas id="canvas" style="background-color:rgb(224,235,250);border-color:#ff6c00;border-style:solid;"></canvas> -->
+		</div>
+	</div>
+
+
+	<!-- <a id="btn" href="#" class="easyui-linkbutton" onclick="handler.upload()">easyui</a>
+
+	<div id="dd" class="easyui-draggable" data-options="handle:'#title'" style="width:100px;height:100px;">
+		<div id="title" style="background:#ccc;">title</div>
+	</div> -->
+
+	<script>
+		mt.init();
+	</script>
+</body>
+
+</html>

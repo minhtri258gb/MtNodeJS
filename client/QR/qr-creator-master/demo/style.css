@@ -1,0 +1,36 @@
+html {
+  padding: .666rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: normal;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+section {
+  margin: 1.333rem 0;
+}
+
+#tools, #parameters {
+  margin-top: 4rem;
+  width: 50%;
+  float: left;
+}
+
+#tools {
+}
+
+label {
+  display: block;
+  margin: .666rem 0;
+}
+
+input:not([type=checkbox]), select {
+  display: block
+}

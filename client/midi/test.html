@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>IDIM</title>
+    
+	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/icon.css">
+	
+	<script type="text/javascript" src="/lib/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="/lib/easyui/jquery.easyui.min.js"></script>
+
+</head>
+
+<body>
+
+	<!-- Tab panel -->
+	<div class="easyui-tabs" data-options="fit:true">
+
+		<!-- Tab 1 -->
+		<div title="Piano Roll">
+
+			<!-- Tools -->
+			<div style="height:30px;">
+				Tool 1, Tool 2
+			</div>
+
+			<div style="display:flex;flex-direction:row;">
+
+				<!-- Track list -->
+				<div id="trackList" style="width:100px;">
+					ABC
+				</div>
+
+				<div style="display:flex;flex-direction:column-reverse;">
+
+					<!-- Properties -->
+					<div style="height:100px;">
+					</div>
+
+					<!-- Design -->
+					<div style="overflow:scroll;background-color:burlywood;">
+						<canvas id="note" style="position:relative;background-color:aquamarine;"></canvas>
+					</div>
+
+				</div>
+			</div>
+
+			<!-- Status -->
+			<div style="height:30px;">
+				Status
+			</div>
+		</div>
+		
+		<!-- Tab 2 -->
+		<div title="Arrange" style="display:none;">
+			tab2
+		</div>
+		
+		<!-- Tab 3 -->
+		<div title="Tempo" style="display:none;">
+			tab3
+		</div>
+
+	</div>
+
+</body>
+</html>

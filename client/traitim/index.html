@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Pháo Hoa - DevForum</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="theme-color" content="#000000">
+	<link rel="shortcut icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
+	<link rel="icon" type="image/png" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
+	<link rel="apple-touch-icon-precomposed" href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
+	<meta name="msapplication-TileColor" content="#000000">
+	<meta name="msapplication-TileImage" content="https://s3-us-west-2.amazonaws.com/s.cdpn.io/329180/firework-burst-icon-v2.png">
+	<link href="https://fonts.googleapis.com/css?family=Russo+One" rel="stylesheet">
+	
+	<!-- SEO -->
+	<meta http-equiv="content-language" content="vi" />
+	<link rel = "canonical" href = "https://devforum.info/phaohoa/" />
+	<link rel="alternate" href="https://devforum.info/phaohoa/" hreflang="vi-vn" />
+
+	<meta property="og:image" content="https://devforum.info/uploads/post/phaohoa.png" />
+	<meta property="og:title" content="Demo Pháo hoa - DevForum" />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content="https://devforum.info/phaohoa/" />
+	<meta property="og:description" content="Code biểu diễn pháo hoa cực đẹp như thật bằng css và javascript - DevForum">
+
+	<link rel="stylesheet" href="reset.min.css">
+	<link rel="stylesheet" href="style.css">
+    <style>
+     
+      canvas {
+        /* position: absolute; */
+        width: 100%;
+        height: 100%;
+      }
+        </style>
+</head>
+<body>
+
+   
+
+
+	<!-- SVG Spritesheet -->
+<div style="height: 0; width: 0; position: absolute; visibility: hidden;">
+	<svg xmlns="http://www.w3.org/2000/svg">
+		
+		<symbol id="icon-sound-on" viewBox="0 0 24 24">
+			<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+		</symbol>
+		<symbol id="icon-sound-off" viewBox="0 0 24 24">
+			<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+		</symbol>
+	</svg>
+</div>
+
+<!-- App -->
+<div class="container">
+  
+	<div class="loading-init">
+        
+		<div class="loading-init__header"></div>
+		<h1><div class="loading-init__status"></div></h1>
+	</div>
+    
+	<div class="stage-container">
+		<div class="canvas-container">
+            <canvas id="pinkboard" class="" style="position: fixed;"></canvas>
+            <!-- <svg class="heart hide" id="heart" style="position: fixed;width: 12%;left:44%;top:38%" viewBox="0 0 32 29.6">
+                <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
+                  c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+              </svg>  -->
+			<canvas id="trails-canvas"></canvas>
+			<canvas id="main-canvas"></canvas>
+		</div>
+		<div class="menu hide">
+			<div class="menu__inner-wrap">
+				<form>
+					<div class="form-option form-option--select">
+						<label class="shell-type-label">Shell Type</label>
+						<select class="shell-type"></select>
+					</div>
+					<div class="form-option form-option--select">
+						<label class="shell-size-label">Shell Size</label>
+						<select class="shell-size"></select>
+					</div>
+					<div class="form-option form-option--select">
+						<label class="quality-ui-label">Quality</label>
+						<select class="quality-ui"></select>
+					</div>
+					<div class="form-option form-option--select">
+						<label class="sky-lighting-label">Sky Lighting</label>
+						<select class="sky-lighting"></select>
+					</div>
+					<div class="form-option form-option--select">
+						<label class="scaleFactor-label">Scale</label>
+						<select class="scaleFactor"></select>
+					</div>
+					<div class="form-option form-option--checkbox">
+						<label class="auto-launch-label">Auto Fire</label>
+						<input class="auto-launch" type="checkbox" />
+					</div>
+					<div class="form-option form-option--checkbox form-option--finale-mode">
+						<label class="finale-mode-label">Finale Mode</label>
+						<input class="finale-mode" type="checkbox" />
+					</div>
+					<div class="form-option form-option--checkbox">
+						<label class="hide-controls-label">Hide Controls</label>
+						<input class="hide-controls" type="checkbox" />
+					</div>
+					<div class="form-option form-option--checkbox form-option--fullscreen">
+						<label class="fullscreen-label">Fullscreen</label>
+						<input class="fullscreen" type="checkbox" />
+					</div>
+					<div class="form-option form-option--checkbox">
+						<label class="long-exposure-label">Open Shutter</label>
+						<input class="long-exposure" type="checkbox" />
+					</div>
+				</form>
+				
+			</div>
+		</div>
+	</div>
+	<div class="help-modal" style="background-color: white;">
+		<div class="help-modal__overlay"></div>
+		<div class="help-modal__dialog">
+			<div class="help-modal__header"></div>
+			<div class="help-modal__body"></div>
+			<button type="button" class="help-modal__close-btn">Close</button>
+		</div>
+	</div>
+</div>
+
+	<script src="fscreen.1.0.1.js"></script>
+	<script src="Stage.0.1.4.js"></script>
+	<script src="MyMath.js"></script>
+	<script src="script.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        /*
+       * Settings
+       */
+      var settings = {
+        particles: {
+          length:   500, // maximum amount of particles
+          duration:   2, // particle duration in sec
+          velocity: 100, // particle velocity in pixels/sec
+          effect: -0.75, // play with this for a nice effect
+          size:      30, // particle size in pixels
+        },
+      };
+       
+       
+      (function(){var b=0;var c=["ms","moz","webkit","o"];for(var a=0;a<c.length&&!window.requestAnimationFrame;++a){window.requestAnimationFrame=window[c[a]+"RequestAnimationFrame"];window.cancelAnimationFrame=window[c[a]+"CancelAnimationFrame"]||window[c[a]+"CancelRequestAnimationFrame"]}if(!window.requestAnimationFrame){window.requestAnimationFrame=function(h,e){var d=new Date().getTime();var f=Math.max(0,16-(d-b));var g=window.setTimeout(function(){h(d+f)},f);b=d+f;return g}}if(!window.cancelAnimationFrame){window.cancelAnimationFrame=function(d){clearTimeout(d)}}}());
+       
+      /*
+       * Point class
+       */
+      var Point = (function() {
+        function Point(x, y) {
+          this.x = (typeof x !== 'undefined') ? x : 0;
+          this.y = (typeof y !== 'undefined') ? y : 0;
+        }
+        Point.prototype.clone = function() {
+          return new Point(this.x, this.y);
+        };
+        Point.prototype.length = function(length) {
+          if (typeof length == 'undefined')
+            return Math.sqrt(this.x * this.x + this.y * this.y);
+          this.normalize();
+          this.x *= length;
+          this.y *= length;
+          return this;
+        };
+        Point.prototype.normalize = function() {
+          var length = this.length();
+          this.x /= length;
+          this.y /= length;
+          return this;
+        };
+        return Point;
+      })();
+       
+      /*
+       * Particle class
+       */
+      var Particle = (function() {
+        function Particle() {
+          this.position = new Point();
+          this.velocity = new Point();
+          this.acceleration = new Point();
+          this.age = 0;
+        }
+        Particle.prototype.initialize = function(x, y, dx, dy) {
+          this.position.x = x;
+          this.position.y = y;
+          this.velocity.x = dx;
+          this.velocity.y = dy;
+          this.acceleration.x = dx * settings.particles.effect;
+          this.acceleration.y = dy * settings.particles.effect;
+          this.age = 0;
+        };
+        Particle.prototype.update = function(deltaTime) {
+          this.position.x += this.velocity.x * deltaTime;
+          this.position.y += this.velocity.y * deltaTime;
+          this.velocity.x += this.acceleration.x * deltaTime;
+          this.velocity.y += this.acceleration.y * deltaTime;
+          this.age += deltaTime;
+        };
+        Particle.prototype.draw = function(context, image) {
+          function ease(t) {
+            return (--t) * t * t + 1;
+          }
+          var size = image.width * ease(this.age / settings.particles.duration);
+          context.globalAlpha = 1 - this.age / settings.particles.duration;
+          context.drawImage(image, this.position.x - size / 2, this.position.y - size / 2, size, size);
+        };
+        return Particle;
+      })();
+       
+      /*
+       * ParticlePool class
+       */
+      var ParticlePool = (function() {
+        var particles,
+            firstActive = 0,
+            firstFree   = 0,
+            duration    = settings.particles.duration;
+       
+        function ParticlePool(length) {
+          // create and populate particle pool
+          particles = new Array(length);
+          for (var i = 0; i < particles.length; i++)
+            particles[i] = new Particle();
+        }
+        ParticlePool.prototype.add = function(x, y, dx, dy) {
+          particles[firstFree].initialize(x, y, dx, dy);
+         
+          // handle circular queue
+          firstFree++;
+          if (firstFree   == particles.length) firstFree   = 0;
+          if (firstActive == firstFree       ) firstActive++;
+          if (firstActive == particles.length) firstActive = 0;
+        };
+        ParticlePool.prototype.update = function(deltaTime) {
+          var i;
+         
+          // update active particles
+          if (firstActive < firstFree) {
+            for (i = firstActive; i < firstFree; i++)
+              particles[i].update(deltaTime);
+          }
+          if (firstFree < firstActive) {
+            for (i = firstActive; i < particles.length; i++)
+              particles[i].update(deltaTime);
+            for (i = 0; i < firstFree; i++)
+              particles[i].update(deltaTime);
+          }
+         
+          // remove inactive particles
+          while (particles[firstActive].age >= duration && firstActive != firstFree) {
+            firstActive++;
+            if (firstActive == particles.length) firstActive = 0;
+          }
+         
+         
+        };
+        ParticlePool.prototype.draw = function(context, image) {
+          // draw active particles
+          if (firstActive < firstFree) {
+            for (i = firstActive; i < firstFree; i++)
+              particles[i].draw(context, image);
+          }
+          if (firstFree < firstActive) {
+            for (i = firstActive; i < particles.length; i++)
+              particles[i].draw(context, image);
+            for (i = 0; i < firstFree; i++)
+              particles[i].draw(context, image);
+          }
+        };
+        return ParticlePool;
+      })();
+       
+      /*
+       * Putting it all together
+       */
+      ;
+        </script>
+</body>
+</html>

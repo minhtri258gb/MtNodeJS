@@ -78,6 +78,8 @@ var manager = {
 			}
 
 			let data = req.body.data;
+			let d = new Date();
+			data.updateTime = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
 
 			manager.database.connect();
 			if (data.id == 0)
@@ -138,16 +140,60 @@ var manager = {
 	game: {
 		action: false,
 		getPage: function(req, res) {
-			if (!mt.app.manager.manga.action) {
-				mt.app.manager.manga.action = true;
-				mt.app.manager.manga.init();
+			if (!mt.app.manager.game.action) {
+				mt.app.manager.game.action = true;
+				mt.app.manager.game.init();
 			}
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/manga.html'));
+			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/game.html'));
 		},
 		init: function() {
 
 			// Register API
+			mt.core.app.post("/manager/game/search", this.search);
+			mt.core.app.post("/manager/game/save", this.save);
 		},
+		search: function(req, res) {
+
+			// Authorize
+			if (!mt.util.authorize(req)) {
+				res.status(403).send("Access denied");
+				return;
+			}
+
+			// Filter
+			let filter = {};
+			if (req.body) {
+				filter = {
+					page: req.body.page || null,
+					rows: req.body.rows || null,
+					sort: req.body.sort || null,
+					order: req.body.order || null,
+					text: req.body.text || null
+				};
+			}
+
+			// Query
+			res.json(manager.database.game.search(filter));
+		},
+		save: function(req, res) {
+			if (!mt.util.authorize(req)) {
+				res.status(403).send("Access denied");
+				return;
+			}
+
+			let data = req.body.data;
+			let d = new Date();
+			data.updateTime = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+
+			manager.database.connect();
+			if (data.id == 0)
+				manager.database.insert("game", data);
+			else
+				manager.database.update("game", data);
+			manager.database.disconnect();
+
+			res.end("Success");
+		}
 	},
 	
 	account: {

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>PlayCanvas Hello Cube</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no' />
+    
+    <link rel="shortcut icon" type="image/png" href="./play/favicon.ico">
+    <script src='./lib/playcanvas/playcanvas-1.38.4.min.js'></script>
+</head>
+<body style="margin:0;overflow: hidden;">
+    <canvas id='render'></canvas>
+    <script>
+		var mt = {
+			canvas: null, // element html
+			app: null, // pc object
+
+			scene: {
+
+				load: function() {
+					
+					// create box entity
+					this.box = new pc.Entity('cube');
+					this.box.addComponent('model', {
+						type: 'box'
+					});
+					mt.app.root.addChild(this.box);
+
+					// create camera entity
+					this.camera = new pc.Entity('camera');
+					this.camera.addComponent('camera', {
+						clearColor: new pc.Color(0.1, 0.1, 0.1)
+					});
+					mt.app.root.addChild(this.camera);
+					this.camera.setPosition(0, 0, 3);
+
+					// create directional light entity
+					this.light = new pc.Entity('light');
+					this.light.addComponent('light');
+					mt.app.root.addChild(this.light);
+					this.light.setEulerAngles(45, 0, 0);
+				}
+			},
+
+			init: function() {
+				
+        		// create a PlayCanvas application
+				this.canvas = document.getElementById('render');
+				this.app = new pc.Application(this.canvas);
+
+				// fill the available space at full resolution
+				this.app.setCanvasFillMode(pc.FILLMODE_FILL_WINDOW);
+				this.app.setCanvasResolution(pc.RESOLUTION_AUTO);
+
+				// ensure canvas is resized when window changes size
+				window.addEventListener('resize', () => this.app.resizeCanvas());
+
+				this.scene.load();
+
+				// rotate the box according to the delta time since the last frame
+				this.app.on('update', this.framework);
+
+				this.app.start();
+			},
+
+			framework: function(dt) {
+				mt.scene.box.rotate(10 * dt, 20 * dt, 30 * dt)
+			}
+		};
+		mt.init();
+    </script>
+</body>
+</html>

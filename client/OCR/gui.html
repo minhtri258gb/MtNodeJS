@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>RCO</title>
+
+	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/icon.css">
+	
+	<script type="text/javascript" src="/lib/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="/lib/easyui/jquery.easyui.min.js"></script>
+
+	<script src='https://unpkg.com/tesseract.js@v2.1.0/dist/tesseract.min.js'></script>
+	
+</head>
+<body>
+
+	<image id="image" style="border:solid;border-width:1px;"></image>
+
+	<div id="result" style="border:solid;border-width:1px;"></div>
+
+	<script>
+
+		function scan(file) {
+
+			// Draw Image
+			$('#image')[0].src = URL.createObjectURL(file);
+
+			let worker = Tesseract.createWorker();
+			worker.load().then(() => {
+				worker.loadLanguage('eng').then(() => {
+					worker.initialize('eng').then(() => {
+						worker.recognize(file).then(res => {
+							$('#result').html(res.data.text);
+							worker.terminate();
+						});
+					});
+				});
+			});
+
+		}
+
+		document.onpaste = (event) => {
+			const auth = navigator.permissions.query({ name: "clipboard-read" });
+			if (auth.state !== 'denied') {
+				navigator.clipboard.read().then(item_list => {
+					let image_type;
+					const item = item_list.find(item =>
+						item.types.some( type => {
+							if (type.startsWith('image/')) {
+								image_type = type;
+								return true;
+							}
+						})
+					);
+					if (item) {
+						item.getType(image_type).then(file => {
+							scan(file);
+						});
+					}
+				});
+			}
+		}
+
+	</script>
+</body>
+</html>

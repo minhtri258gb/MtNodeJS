@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>CISUM</title>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link id="logo" rel="shortcut icon" type="image/png" href="/music/favicon.ico">
+	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="/music/style.css">
+
+	<script type="text/javascript" src="/lib/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="/lib/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="/lib/svg/svg.min.js"></script>
+	<script type="text/javascript" src="/common/Config.js"></script>
+	<script type="text/javascript" src="/music/mt.js"></script>
+
+</head>
+
+<body>
+
+	<div id="layout" class="easyui-layout" style="caret-color:transparent;">
+		<div data-options="region:'west',title:'Music player',split:false,collapsible:false" style="width:25%">
+		
+			<audio id="player" controls hidden></audio>
+			<br>
+
+			<div style="width:98%;margin-left:1%;margin-right:1%;">
+
+				<div style="width:100%;height:100px;border:solid;border-radius:5px;border-width:1px;border-color:#95B8E7;position:relative;">
+					<canvas id="staticWave" style="width:100%;height:100%;z-index:1;"></canvas>
+					<span id="curStaticWave" style="left:0px;width:1px;height:100%;position:absolute;z-index:2;background-color:#95B8E7;"></span>
+					<div style="height:15px;top:50%;left:50%;position:absolute;transform:translate(-50%,-50%);z-index:3;">
+						<span id="currentTime">0:00</span> / <span id="durationTime">0:00</span>
+					</div>
+				</div>
+				<br>
+
+				<canvas id="dynamicWave" style="width:100%;height:100px;border:solid;border-radius:5px;border-width:1px;border-color:#95B8E7;"></canvas>
+				<br>
+
+				<div style="height:150px;border:solid;border-radius:5px;border-width:1px;border-color:#95B8E7;">
+
+					<div style="width:40px;height:100%;float:left;position:relative;display:flex;flex-direction:column;border-right:ridge;border-width:thin;">
+						
+						<!-- Volume Slider -->
+						<div style="margin:auto;margin-top:10px;width:fit-content;flex-grow:1;">
+							<div id="volumeBar"></div>
+						</div>
+
+						<!-- Volume Button -->
+						<div style="bottom:0;width:100%;height:40px;display:table;">
+							<div style="display:table-cell;vertical-align:middle;text-align:center;">
+								<a id="btnVolume" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-volume-off'" style="width:32px;" onclick="mt.c_btnVolume.onClick()"></a>
+							</div>
+						</div>
+
+					</div>
+	
+					<div style="height:100%;margin-left:50px;">
+
+						<!-- Button -->
+						<div style="text-align:center;margin-right:40px;margin-top:5px;">
+							<a id="btnBack" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-back2'" style="width:32px;" onclick="mt.c_back.onClick()"></a>
+							<a id="btnPause" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-play'" style="width:32px;" onclick="mt.c_pause.onClick()"></a>
+							<a id="btnNext" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-next'" style="width:32px;" onclick="mt.c_next.onClick()"></a>
+						</div>
+						<br>
+
+						<!-- Random -->
+						<input id="autoNext" class="easyui-switchbutton" data-options="checked:true,onText:'Random',offText:'Linner'" style="width:90px;margin-left:5px;">
+						
+						<!-- Loop -->
+						Loop: <input id="loop" type="text" class="easyui-numberspinner" value="0" data-options="min:0,max:99" style="width:53px;">
+						<br>
+
+						<!-- Include -->
+						<input id="tagInclude" type="text" style="width:100%;">
+						<br>
+						
+						<!-- Exclude -->
+						<input id="tagExclude" type="text" style="width:100%;">
+						<br>
+					
+					</div>
+				</div>
+				<br>
+
+				<!-- Next Playlist -->
+				<div id="listNext"></div>
+				<br>
+			
+				<!-- Cut Option -->
+				<div id="cutDiv" style="height:150px;border:ridge;margin-top:10px;display:none;">
+					<p style="text-align:center;">Cut Option</p>
+					
+					<div style="width:100%;padding-left:13px;padding-right:13px;">
+						<input id="cutSlider" style="width:100%;">
+					</div>
+
+					<div style="text-align:center;">
+						<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-play'" style="width:32px;" onclick="mt.cut.play()"></a>
+						<input id="cutStart" type="text" class="easyui-numberbox" value="0" data-options="min:0,precision:2" style="width:80px;">
+						<input id="cutEnd" type="text" class="easyui-numberbox" value="0" data-options="min:0,precision:2" style="width:80px;">
+						<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="mt.cut.save()"></a>
+					</div>
+				</div>
+				<br>
+
+			</div>
+		
+		</div>
+		<div data-options="region:'center',title:'Name: ...'" style="padding:5px;background:#eee;">
+			
+			<!-- Toolbar -->
+			<div id="toolbar">
+				<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="mt.c_list.toolbar.edit()">Edit</a>
+				<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="mt.c_list.toolbar.remove()">Remove</a>
+				<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-cut',plain:true" onclick="mt.c_list.toolbar.cut()">Cut</a>
+				<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-share',plain:true" onclick="mt.handler.share()">Share</a>
+				<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-open-stack',plain:true" style="float:right;margin-right:20px;" onclick="mt.c_drawer.open()">New Song</a>
+			</div>
+			
+			<!-- Datagrid -->
+			<table id="list"></table>
+			
+			<!-- Drawer -->
+			<div id="drawer" class="easyui-drawer">
+				<div id="toolbar_new" style="text-align:center;">
+					<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-refresh',plain:true" onclick="mt.c_drawer.refresh()">Refresh</a>
+				</div>
+				<table id="list_new"></table>
+			</div>
+
+		</div>
+	</div>
+
+	<script>
+		mt.init();
+	</script>
+</body>
+
+</html>

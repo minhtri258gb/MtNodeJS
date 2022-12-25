@@ -1,0 +1,10 @@
+<div id="toolbar_game">
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="game.toolbar.add()">Add</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="game.toolbar.edit()">Edit</a>
+	<input class="easyui-textbox" data-options="iconCls:'icon-search',onChange:function(text){game.toolbar.search(text)}" style="width:256px">
+</div>
+
+<table id="datagrid_game"></table>
+<script>
+	$.getScript("./game.js", function(data, textStatus, jqxhr) { game.init(); });
+</script>

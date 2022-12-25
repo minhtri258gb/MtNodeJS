@@ -1,0 +1,6 @@
+
+// Tạo project
+npm init
+
+// Cài module
+npm i jimp

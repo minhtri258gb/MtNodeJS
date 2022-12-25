@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>TSET</title>
+
+	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="/lib/leaflet/leaflet.css">
+	<!-- <link rel="stylesheet" href="/../music/css/style.css"> -->
+
+	<script type="text/javascript" src="/lib/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="/lib/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="/lib/leaflet/leaflet.js"></script>
+	<script type="text/javascript" src="/common/config.js"></script>
+</head>
+
+<body>
+	
+	<!-- <audio id="audio" controls></audio>
+	<canvas id="canvas"></canvas> -->
+	<div id="map" style="height:320px;"></div>
+
+	<script>
+
+	var map = L.map('map').setView([51.505, -0.09], 13);
+	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	}).addTo(map);
+
+		// const urlParams = new URLSearchParams(window.location.search);
+		// const id = urlParams.get('id')
+		// const id2 = urlParams.get('id2')
+		// console.log(id, id2);
+
+	</script>
+</body>
+
+</html>

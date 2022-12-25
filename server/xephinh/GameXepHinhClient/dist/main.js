@@ -1,0 +1,1 @@
+window.onload=function(){let e=$("#lstImg");e.html("");for(let l=0;l<8;l++)e.append('<img id="scream" hidden src="./image/img'+l+'.jpg" alt="The Scream"></img>');console.log(lst)};

@@ -3,8 +3,10 @@ var database = {
 
 	struct: {
 		anime: ["name", "story", "art", "sound", "fantasy", "sad", "joke", "brand", "review", "end", "character"],
+		game: ["id", "name", "graphic", "audio", "gameplay", "story", "review", "muliplayer", "end"],
 	},
 
+	
 	init: function(_mt) {
 		mt = _mt;
 		mt.lib.register('sqlite', 'sqlite-sync');
@@ -93,6 +95,44 @@ var database = {
 			
 			// SQL, Filter
 			let sql = "SELECT * FROM anime WHERE 1=1";
+			if (filter.text && filter.text.length > 0) {
+				sql += " and name LIKE '%" + filter.text + "%'";
+			}
+
+			// Sql Count
+			let sqlCount = "SELECT count(id) n FROM ("+sql+")";
+
+			// Sort
+			if (filter.sort) {
+				if (!filter.order) filter.order = 'asc'
+				sql += " ORDER BY " + filter.sort + " " + filter.order;
+			} else {
+				sql += " ORDER BY id DESC";
+			}
+
+			// KPaging
+			if (filter.page && filter.rows) {
+				let offset = (filter.page-1) * filter.rows;
+				sql += " LIMIT " + filter.rows + " OFFSET " + offset;
+			}
+			
+			// Query
+			database.connect();
+			let total = database.query(sqlCount)[0].n;
+			let rows = database.query(sql);
+			database.disconnect();
+
+			return { total: total, rows: rows };
+		}
+
+	},
+
+	game: {
+
+		search: function(filter) {
+			
+			// SQL, Filter
+			let sql = "SELECT * FROM game WHERE 1=1";
 			if (filter.text && filter.text.length > 0) {
 				sql += " and name LIKE '%" + filter.text + "%'";
 			}

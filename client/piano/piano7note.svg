@@ -1,0 +1,35 @@
+
+<svg width="168" height="80" viewBox="0 0 420 200" stroke="#000" stroke-width="1" fill="#fff">
+	<polygon id="c5"  points="0   0, 0   200, 60  200, 60  0"/>
+	<polygon id="d5"  points="60  0, 60  200, 120 200, 120 0"/>
+	<polygon id="e5"  points="120 0, 120 200, 180 200, 180 0"/>
+	<polygon id="f5"  points="180 0, 180 200, 240 200, 240 0"/>
+	<polygon id="g5"  points="240 0, 240 200, 300 200, 300 0"/>
+	<polygon id="a5"  points="300 0, 300 200, 360 200, 360 0"/>
+	<polygon id="b5"  points="360 0, 360 200, 420 200, 420 0"/>
+	<text x="30"  y="190" fill="black">Q</text>
+	<text x="90"  y="190" fill="black">W</text>
+	<text x="150" y="190" fill="black">E</text>
+	<text x="210" y="190" fill="black">R</text>
+	<text x="270" y="190" fill="black">T</text>
+	<text x="330" y="190" fill="black">Y</text>
+	<text x="390" y="190" fill="black">U</text>
+
+	<!--                      0   0, 0   130, 35  130, 35  0-->
+	<polygon id="db5" points="35  0, 35  130, 70  130, 70  0"/>
+	<!--                      70  0, 70  130, 105 130, 105 0-->
+	<polygon id="eb5" points="105 0, 105 130, 140 130, 140 0"/>
+	<!--                      140 0, 140 130, 175 130, 175 0-->
+	<!--                      175 0, 175 130, 210 130, 210 0-->
+	<polygon id="gb5" points="210 0, 210 130, 245 130, 245 0"/>
+	<!--                      245 0, 245 130, 280 130, 280 0-->
+	<polygon id="ab5" points="280 0, 280 130, 315 130, 315 0"/>
+	<!--                      315 0, 315 130, 350 130, 350 0-->
+	<polygon id="bb5" points="350 0, 350 130, 385 130, 385 0"/>
+	<!--                      385 0, 385 130, 420 130, 420 0-->
+	<text x="52"  y="120" fill="white">2</text>
+	<text x="122" y="120" fill="white">3</text>
+	<text x="227" y="120" fill="white">5</text>
+	<text x="297" y="120" fill="white">6</text>
+	<text x="367" y="120" fill="white">7</text>
+</svg>

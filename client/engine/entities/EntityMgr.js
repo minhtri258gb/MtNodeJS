@@ -1,0 +1,3 @@
+mt.system.EntityMgr = {
+
+};

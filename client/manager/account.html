@@ -1,0 +1,10 @@
+<div id="toolbar_account">
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="account.toolbar.add()">Add</a>
+	<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" onclick="account.toolbar.edit()">Edit</a>
+	<input class="easyui-textbox" data-options="iconCls:'icon-search',onChange:function(text){account.toolbar.search(text)}" style="width:256px">
+</div>
+
+<table id="datagrid_account"></table>
+<script>
+	$.getScript("/manager/account.js", function(data, textStatus, jqxhr) { account.init(); });
+</script>

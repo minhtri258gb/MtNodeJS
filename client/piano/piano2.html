@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ONAIP</title>
+
+	<meta http-equiv="X-UA-Compatible" content="requiresActiveX=true"/>
+	
+    <link rel="shortcut icon" type="image/png" href="./piano/favicon.ico">
+	<link rel="stylesheet" type="text/css" href="./lib/easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="./lib/easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="./piano/style.css" />
+
+	<script type="text/javascript" src="./lib/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="./lib/easyui/jquery.easyui.min.js"></script>
+
+	<script type="text/javascript" src="./lib/jzz/JZZ.js"></script>
+	<script type="text/javascript" src="./lib/jzz/JZZ.midi.SMF.js"></script>
+	<script type="text/javascript" src="./lib/jzz/JZZ.gui.Player.js"></script>
+	<script type="text/javascript" src="./lib/jzz/JZZ.synth.Tiny.js"></script>
+	<script type="text/javascript" src="./lib/jzz/JZZ.input.Kbd.js"></script>
+	
+	<script type="text/javascript" src="./lib/svg/svg.min.js"></script>
+
+	<script type="text/javascript" src="./piano/mt.js"></script>
+</head>
+
+<body>
+	<div id="layout" class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'west',title:'Control',split:false,collapsible:false" style="width:256px;">
+			
+			<!-- Bind -->
+			<a id="bind" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-bind'" onclick="mt.tool.bind.click()">Bind</a>
+			<br>
+
+			<!-- Offset Note -->
+			<p>Offset Note</p>
+			<input id="offset_note" class="easyui-numberspinner" data-options="min:-10,max:10,value:0" style="width:80px;">
+
+			<!-- File midi -->
+			<input id="file" style="width:200px">
+
+			<!-- Button Play -->
+			<a id="play" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-play'" onclick="mt.tool.play.click()">Play</a>
+			<br>
+
+			<!-- Button Download -->
+			<a id="download" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="mt.tool.download.click()">Download</a>
+			<br>
+
+			<!-- Button Test -->
+			<a id="test" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-tip'" onclick="mt.tool.test()">Test</a>
+			<br>
+			<div id="out"></div>
+
+			<!-- Desing Button -->
+			<input class="easyui-switchbutton" data-options="onChange:mt.tool.switch.chance" checked>
+
+			<!-- List program -->
+			<div id="list" class="tab" hidden>
+				<div class="col">
+					<div class="hdr">Piano</div>
+					<div>&nbsp;&nbsp;0 Acoustic Grand Piano</div>
+					<div>&nbsp;&nbsp;1 Bright Acoustic Piano</div>
+					<div>&nbsp;&nbsp;2 Electric Grand Piano</div>
+					<div>&nbsp;&nbsp;3 Honky-tonk Piano</div>
+					<div>&nbsp;&nbsp;4 Electric Piano 1</div>
+					<div>&nbsp;&nbsp;5 Electric Piano 2</div>
+					<div>&nbsp;&nbsp;6 Harpsichord</div>
+					<div>&nbsp;&nbsp;7 Clavinet</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Chromatic Percussion</div>
+					<div>&nbsp;&nbsp;8 Celesta</div>
+					<div>&nbsp;&nbsp;9 Glockenspiel</div>
+					<div>&nbsp;10 Music Box</div>
+					<div>&nbsp;11 Vibraphone</div>
+					<div>&nbsp;12 Marimba</div>
+					<div>&nbsp;13 Xylophone</div>
+					<div>&nbsp;14 Tubular Bells</div>
+					<div>&nbsp;15 Dulcimer</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Organ</div>
+					<div>&nbsp;16 Drawbar Organ</div>
+					<div>&nbsp;17 Percussive Organ</div>
+					<div>&nbsp;18 Rock Organ</div>
+					<div>&nbsp;19 Church Organ</div>
+					<div>&nbsp;20 Reed Organ</div>
+					<div>&nbsp;21 Accordion</div>
+					<div>&nbsp;22 Harmonica</div>
+					<div>&nbsp;23 Tango Accordion</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Guitar</div>
+					<div>&nbsp;24 Acoustic Guitar (nylon)</div>
+					<div>&nbsp;25 Acoustic Guitar (steel)</div>
+					<div>&nbsp;26 Electric Guitar (jazz)</div>
+					<div>&nbsp;27 Electric Guitar (clean)</div>
+					<div>&nbsp;28 Electric Guitar (muted)</div>
+					<div>&nbsp;29 Overdriven Guitar</div>
+					<div>&nbsp;30 Distortion Guitar</div>
+					<div>&nbsp;31 Guitar Harmonics</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Bass</div>
+					<div>&nbsp;32 Acoustic Bass</div>
+					<div>&nbsp;33 Electric Bass (finger)</div>
+					<div>&nbsp;34 Electric Bass (pick)</div>
+					<div>&nbsp;35 Fretless Bass</div>
+					<div>&nbsp;36 Slap Bass 1</div>
+					<div>&nbsp;37 Slap Bass 2</div>
+					<div>&nbsp;38 Synth Bass 1</div>
+					<div>&nbsp;39 Synth Bass 2</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Strings</div>
+					<div>&nbsp;40 Violin</div>
+					<div>&nbsp;41 Viola</div>
+					<div>&nbsp;42 Cello</div>
+					<div>&nbsp;43 Contrabass</div>
+					<div>&nbsp;44 Tremolo Strings</div>
+					<div>&nbsp;45 Pizzicato Strings</div>
+					<div>&nbsp;46 Orchestral Harp</div>
+					<div>&nbsp;47 Timpani</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Ensemble</div>
+					<div>&nbsp;48 String Ensemble 1</div>
+					<div>&nbsp;49 String Ensemble 2</div>
+					<div>&nbsp;50 Synth Strings 1</div>
+					<div>&nbsp;51 Synth Strings 2</div>
+					<div>&nbsp;52 Choir Aahs</div>
+					<div>&nbsp;53 Voice Oohs</div>
+					<div>&nbsp;54 Synth Choir</div>
+					<div>&nbsp;55 Orchestra Hit</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Brass</div>
+					<div>&nbsp;56 Trumpet</div>
+					<div>&nbsp;57 Trombone</div>
+					<div>&nbsp;58 Tuba</div>
+					<div>&nbsp;59 Muted Trumpet</div>
+					<div>&nbsp;60 French Horn</div>
+					<div>&nbsp;61 Brass Section</div>
+					<div>&nbsp;62 Synth Brass 1</div>
+					<div>&nbsp;63 Synth Brass 2</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Reed</div>
+					<div>&nbsp;64 Soprano Sax</div>
+					<div>&nbsp;65 Alto Sax</div>
+					<div>&nbsp;66 Tenor Sax</div>
+					<div>&nbsp;67 Baritone Sax</div>
+					<div>&nbsp;68 Oboe</div>
+					<div>&nbsp;69 English Horn</div>
+					<div>&nbsp;70 Bassoon</div>
+					<div>&nbsp;71 Clarinet</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Pipe</div>
+					<div>&nbsp;72 Piccolo</div>
+					<div>&nbsp;73 Flute</div>
+					<div>&nbsp;74 Recorder</div>
+					<div>&nbsp;75 Pan Flute</div>
+					<div>&nbsp;76 Blown Bottle</div>
+					<div>&nbsp;77 Shakuhachi</div>
+					<div>&nbsp;78 Whistle</div>
+					<div>&nbsp;79 Ocarina</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Synth Lead</div>
+					<div>&nbsp;80 Lead 1 (square)</div>
+					<div>&nbsp;81 Lead 2 (sawtooth)</div>
+					<div>&nbsp;82 Lead 3 (calliope)</div>
+					<div>&nbsp;83 Lead 4 (chiff)</div>
+					<div>&nbsp;84 Lead 5 (charang)</div>
+					<div>&nbsp;85 Lead 6 (voice)</div>
+					<div>&nbsp;86 Lead 7 (fifths)</div>
+					<div>&nbsp;87 Lead 8 (bass + lead)</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Synth Pad</div>
+					<div>&nbsp;88 Pad 1 (new age)</div>
+					<div>&nbsp;89 Pad 2 (warm)</div>
+					<div>&nbsp;90 Pad 3 (polysynth)</div>
+					<div>&nbsp;91 Pad 4 (choir)</div>
+					<div>&nbsp;92 Pad 5 (bowed)</div>
+					<div>&nbsp;93 Pad 6 (metallic)</div>
+					<div>&nbsp;94 Pad 7 (halo)</div>
+					<div>&nbsp;95 Pad 8 (sweep)</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Synth Effects</div>
+					<div>&nbsp;96 FX 1 (rain)</div>
+					<div>&nbsp;97 FX 2 (soundtrack)</div>
+					<div>&nbsp;98 FX 3 (crystal)</div>
+					<div>&nbsp;99 FX 4 (atmosphere)</div>
+					<div>100 FX 5 (brightness)</div>
+					<div>101 FX 6 (goblins)</div>
+					<div>102 FX 7 (echoes)</div>
+					<div>103 FX 8 (sci-fi)</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Ethnic</div>
+					<div>104 Sitar</div>
+					<div>105 Banjo</div>
+					<div>106 Shamisen</div>
+					<div>107 Koto</div>
+					<div>108 Kalimba</div>
+					<div>109 Bagpipe</div>
+					<div>110 Fiddle</div>
+					<div>111 Shanai</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Percussive</div>
+					<div>112 Tinkle Bell</div>
+					<div>113 Agogo</div>
+					<div>114 Steel Drums</div>
+					<div>115 Woodblock</div>
+					<div>116 Taiko Drum</div>
+					<div>117 Melodic Tom</div>
+					<div>118 Synth Drum</div>
+					<div>119 Reverse Cymbal</div>
+				</div>
+				<div class="col">
+					<div class="hdr">Sound Effects</div>
+					<div>120 Guitar Fret Noise</div>
+					<div>121 Breath Noise</div>
+					<div>122 Seashore</div>
+					<div>123 Bird Tweet</div>
+					<div>124 Telephone Ring</div>
+					<div>125 Helicopter</div>
+					<div>126 Applause</div>
+					<div>127 Gunshot</div>
+				</div>
+			</div>
+
+		</div>
+		<div data-options="region:'center',title:'Piano'" style="background:#eee;">
+			<div id="note"></div>
+			<div id="piano"></div>
+		</div>
+		<!-- <div data-options="region:'east',title:'List',split:true" style="width:300px;"></div> -->
+		<!-- <div data-options="region:'south',title:'Sheet',split:true" style="height:300px;"></div> -->
+	</div>
+
+<script>
+	mt.init();
+</script>
+
+</body>
+</html>

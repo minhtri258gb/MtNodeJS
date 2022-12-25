@@ -84,6 +84,9 @@ var anime = {
 					},
 					{field:'end', title:'End', editor:{type:'textbox'}},
 					{field:'character', title:'Character', editor:{type:'tagbox'}},
+					{field:'updateTime', title:'Update', formatter:function(v, r, i) {
+						return v;
+					}},
 					{field:'action', title:'', width:70, hidden:true, formatter:function(v, r, i) {
 						return '<div id="action'+r.id+'"></div>';
 					}}

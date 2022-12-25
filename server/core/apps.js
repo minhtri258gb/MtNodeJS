@@ -8,7 +8,10 @@ var apps = {
 			"music",
 			"engine",
 			"image",
-			"midi"
+			"midi",
+			"calendar",
+			"QR",
+			"OCR",
 		];
 
 		let register = (name) => {
@@ -29,19 +32,9 @@ var apps = {
 		require('../localNetwork/API.js').register(mt);
 
 		// Common API
-		mt.core.app.post("/authorize", function(req, res) {
-			res.end(mt.util.authorize(req) ? "true" : "false");
-		});
+		mt.app['common'] = require("../common/API.js");
+		mt.app['common'].init(mt);
 
-		// Test
-		mt.core.app.get("/test", (req, res) => {
-			apps.test(req);
-			res.end();
-		});
-		// this.core.app.get("/test2", (req, res) => {
-		// 	res.send(mt.test2());
-		// });
-		
 	},
 
 	test: function(req) {

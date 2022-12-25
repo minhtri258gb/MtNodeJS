@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Eert Dna Tnet</title>
+    <link rel="shortcut icon" type="image/png" href="./game/minesweeper/favicon.ico"> <!-- #TODO -->
+	<script type="text/javascript" src="./lib/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="./lib/svg/svg.min.js"></script>
+	<style>
+		table.board {
+			border-collapse: collapse;
+			border: 0;
+			padding: 0;
+			line-height: 0;
+			margin: auto;
+		}
+		.numb {
+			border: 0;
+			padding: 0;
+			margin: 0;
+			width: 30px;
+			height: 30px;
+			background-color: #ffffff;
+			font-weight: bold;
+			text-align: center;
+		}
+		.cell {
+			border: 1px #000000 solid;
+			padding: 0;
+			margin: 0;
+			width: 30px;
+			height: 30px;
+			background-color: #ffffff;
+		}
+	</style>
+</head>
+<body style="margin:0;overflow:hidden;display:flex;">
+	<div id="tool" style="background-color:#f3ffe3;">
+		<!-- #TODO -->
+	</div>
+	<div id="content_bound" oncontextmenu="return false;" style="background-color:#e9f4ff;">
+		<div id="content" style="margin:auto;"></div>
+	</div>
+    <script>
+		var mt = {
+
+			game: {
+				size: 7,
+				treePercent: 20,
+				skin: "./game/tentandtree/",
+				map: [],
+				hintV: [],
+				hintH: [],
+
+				enum: {
+					NONE: 0,
+					GRSS: 1,
+					TREE: 2,
+					TENT: 3
+				},
+
+				init: function() {
+
+					// Generator
+					this.generator();
+
+
+					// Fill tent
+					// let mineNum = 0;
+					// while (mineNum < this.mine) {
+					// 	let w = Math.floor(Math.random() * this.width);
+					// 	let h = Math.floor(Math.random() * this.height);
+					// 	if (!this.map[h][w].mine) {
+					// 		this.map[h][w].mine = true;
+					// 		mineNum++;
+					// 	}
+					// }
+				},
+
+				generator: function() {
+
+					// Value
+					let total = this.size * this.size;
+					let num = Math.floor(total * this.treePercent / 100);
+					
+					this.hintV = new Array(this.size).fill(0);
+					this.hintH = new Array(this.size).fill(0);
+
+					// Fill default data to map
+					this.map = new Array(total).fill().map( u => { return {
+						type: this.enum.NONE,
+						action: this.enum.NONE
+					}});
+
+					// Fill tent and tree
+					let count = total;
+					for (let i=0; i<num; i++) {
+						let rand = Math.floor(Math.random() * count) + 1;
+
+						let pos = 0;
+
+						for (let j=0; j<total; j++) {
+							if (this.map[j].type == this.enum.NONE) {
+								pos++;
+								if (pos == rand) {
+									pos = j;
+									break;
+								}
+							}
+						}
+
+						// // debug
+						// this.around(pos, (pos) => {
+						// 	if (this.map[pos].type == this.enum.TENT) {
+						// 		debugger
+						// 	}
+						// });
+
+						this.map[pos].type = this.enum.TENT; count--;
+
+						// Hint count
+						let hintPos = Math.floor(pos / this.size);
+						this.hintV[hintPos]++;
+						hintPos = pos % this.size;
+						this.hintH[hintPos]++;
+
+						let lstCross = [];
+						this.around(pos, (pos, cross) => {
+							if (this.map[pos].type == this.enum.NONE) {
+								this.map[pos].type = this.enum.GRSS; count--;
+							}
+							if (cross && this.map[pos].type != this.enum.TREE) {
+								lstCross.push(pos);
+							}
+						});
+
+						// rand tree pos
+						if (lstCross.length > 0) {
+							let treePos = Math.floor(Math.random() * lstCross.length);
+							this.map[lstCross[treePos]].type = this.enum.TREE;
+						} else {
+							alert('Lỗi ko tìm đc tree gần tent')
+						}
+					}
+
+				},
+
+				render: function() {
+					for (let i=0; i<this.size; i++) {
+						let line = '';
+						for (let j=0; j<this.size; j++) {
+							line += '\t' + this.map[i*this.size+j].cell;
+						}
+						console.log(line+'\n');
+					}
+				},
+
+				click: function(event) {
+					let self = mt.game;
+					let pos = parseInt(event.target.id.substring(1));
+					let cell = self.map[pos];
+
+					function set(type) {
+						cell.action = type;
+						event.target.src = self.getImage(type);
+					}
+
+					if (event.buttons == 1) { // left click
+						if (event.type == 'mousedown') {
+							if (cell.action != self.enum.GRSS)
+								set(self.enum.GRSS);
+							else
+								set(self.enum.NONE);
+						} else {
+							set(self.enum.GRSS);
+						}
+					} else if (event.buttons == 2) { // right click
+						if (event.type == 'mousedown') {
+							if (cell.action != self.enum.TENT)
+								set(self.enum.TENT);
+							else
+								set(self.enum.NONE);
+						}
+					}
+					return false;
+				},
+
+				getImage: function(type) {
+					let path = this.skin;
+					switch(type) {
+						case this.enum.NONE: path += "blnk.png"; break;
+						case this.enum.GRSS: path += "grss.png"; break;
+						case this.enum.TREE: path += "tree.png"; break;
+						case this.enum.TENT: path += "tent.png"; break;
+					}
+					return path;
+				},
+
+				checkWin: function() {
+					return (this.opened == mt.game.width * mt.game.height - mt.game.mine);
+				},
+
+				around: function(pos, callback) {
+					let w = pos % this.size;
+					let h = Math.floor(pos / this.size);
+					let lst = [{w:w-1,h:h-1},{w:w-1,h:h,n:true},{w:w-1,h:h+1},{w:w,h:h-1,n:true},{w:w,h:h+1,n:true},{w:w+1,h:h-1},{w:w+1,h:h,n:true},{w:w+1,h:h+1}];
+					for (let i=0; i<8; i++) {
+						w = lst[i].w;
+						h = lst[i].h;
+						if (w < 0 || h < 0 || w >= this.size || h >= this.size)
+							continue;
+						callback(h * this.size + w, lst[i].n);
+					}
+				},
+
+				getCell: function(w, h) {
+					if (this.map[h][w].mine)
+						return 9; // mine
+
+					let num = 0;
+					this.around(w, h, (w, h) => {
+						if (this.map[h][w].mine)
+							num++;
+					});
+					return num;
+				},
+
+				open: function(w, h) {
+					let cell = this.map[h][w];
+					cell.num = this.getCell(w, h);
+
+					if (this.help > 0) {
+						if (cell.num == 0)
+							this.help = 0;
+						else
+							this.help--;
+						if (cell.num == 9) {
+							cell.num = -1;
+							this.flag(w, h);
+							return;
+						}
+					}
+
+					this.setImage(cell.rect, cell.num);
+					this.opened++;
+					
+					if (cell.num == 9)
+						this.lost();
+				},
+
+				flag: function(w, h) {
+					let cell = this.map[h][w];
+					if (cell.flag) {
+						this.setImage(cell.rect, -1);
+						cell.flag = false;
+					} else {
+						this.setImage(cell.rect, 10);
+						cell.flag = true;
+					}
+				},
+
+				win: function() {
+					alert("Win");
+				},
+
+				lost: function() {
+					alert('Fail');
+				}
+			},
+
+			tool: {
+
+				init: function() {
+
+					// UI
+					this.resize();
+				},
+
+				resize: function() {
+					$('#tool').css({
+						width: 256,
+						height: document.documentElement.clientHeight
+					});
+				}
+			},
+
+			content: {
+
+				init: function() {
+					let size = mt.game.size;
+					
+					let html = '<table class="board"><tbody>';
+					for (let h=-1; h<size; h++) {
+						html += '<tr>';
+						for (let w=-1; w<size; w++) {
+							if (w == -1) {
+								if (h == -1) {
+									html += '<td class="numb">&nbsp;</td>';
+								} else {
+									html += '<td class="numb">'+mt.game.hintV[h]+'</td>';
+								}
+							} else if (h == -1) {
+								html += '<td class="numb">'+mt.game.hintH[w]+'</td>';
+							} else {
+								let pos = h * mt.game.size + w;
+								if (mt.game.map[h*size+w].type == mt.game.enum.TREE)
+									html += '<td class="cell"><img alt="" id="c'+pos+'" src="'+mt.game.skin+'tree.png"></td>';
+								else {
+									html += '<td class="cell"><img alt="" id="c'+pos+'" src="'+mt.game.skin+'blnk.png" draggable="true"'; // ?????? draggable
+									// html += ' onmousedown="return false"';
+									html += ' onmousedown="return mt.game.click(event)"';
+									html += ' onmouseover="return mt.game.click(event)"';
+									html += '></td>';
+								}
+							}
+						}
+						html += '</tr>';
+					}
+					html += '</tbody></table>';
+					$('#content').append(html);
+
+				},
+
+				resize: function() {
+					// let width = document.documentElement.clientWidth - 256;
+					// let height = document.documentElement.clientHeight;
+
+					// $('#content_bound').css({
+					// 	width: width,
+					// 	height: height
+					// });
+				}
+			},
+
+			event: {
+
+				init: function() {
+					window.onresize = this.resize;
+				},
+
+				resize: function() {
+					mt.tool.resize();
+					mt.content.resize();
+				},
+				
+				// cancel: function(event) {
+				// 	event = event || window.event;
+
+				// 	if (event.stopPropagation)
+				// 		event.stopPropagation();
+
+				// 	event.cancelBubble = true;
+				// 	return false;
+				// }
+			},
+
+			init: function() {
+				this.game.init();
+				// this.tool.init();
+				this.content.init();
+				// this.event.init();
+			}
+		};
+
+		mt.init();
+    </script>
+</body>
+</html>
