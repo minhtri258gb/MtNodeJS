@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/thanghuy/web-deploy.git'
+                git 'https://github.com/minhtri258gb/MtServer.git'
             }
         }
         stage('Build') {
