@@ -1,1 +1,0 @@
-if(typeof globalThis !== "undefined") globalThis.__babylonSnapshotTimestamp__ = 1658994324676;
