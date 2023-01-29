@@ -4,19 +4,14 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/thanghuy/web-deploy.git'
+                git 'https://github.com/minhtri258gb/MtServer.git'
             }
         }
         stage('Build') {
             steps {
-                bat 'npm install'
-                bat "npm run build"
-            }
-        }
-        stage('Deploy') {
-            steps {
-                bat 'del -rf /var/www/html'
-                bat "cp -r ${WORKSPACE}/dist/ /var/www/html"
+                sh "sudo docker-compose down"
+                sh "sudo docker-compose up -d --build"
+                sh "sudo docker ps"
             }
         }
     }
