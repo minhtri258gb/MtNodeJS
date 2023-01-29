@@ -13,9 +13,9 @@ var manager = {
 		},
 		addAnime: function() {
 			this.component.tabs('add', {
-				title:'Anime',
+				title: 'Anime',
 				href: '/manager/anime',
-				closable:true,
+				closable: true,
 				tools:[{
 					iconCls:'icon-key',
 					handler:function(){

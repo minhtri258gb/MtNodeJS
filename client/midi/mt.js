@@ -6,6 +6,7 @@ var mt = {
 
 			this.event.init();
 			this.canvas.init();
+			this.dgMidi.init();
 			this.tone.init();
 			this.mgr.init();
 
@@ -15,6 +16,25 @@ var mt = {
 	},
 
 	handler: {
+
+		playMini: function() {
+/*
+C4 8n 0.0|
+E4 8n 0.5|
+G4 8n 1.0|
+G4 4n 1.5|
+*/
+			let s = $('#textNotes').val();
+			let notes = s.split('|');
+			const now = Tone.now();
+			notes.forEach(value => {
+				if (value) {
+					let params = value.split(' ');
+					mt.tone._synth.triggerAttackRelease(params[0], params[1], now + parseFloat(params[2]));
+				}
+			});
+
+		},
 
 		removeNote: function() {
 			let mgr = mt.mgr;
@@ -258,6 +278,32 @@ var mt = {
 			// ctx.stroke();
 		}
 
+	},
+
+	dgMidi: {
+		component: null,
+		data: [
+			{
+				code: 'a',
+				name: 'b',
+				price: 12
+			}
+		],
+
+		init: function() {
+
+			this.component = $('#dgMidi');
+
+			// Init datagrid
+			this.component.datagrid({
+				data: this.data,
+				columns:[[
+					{field:'code',title:'Code',width:100},
+					{field:'name',title:'Name',width:100},
+					{field:'price',title:'Price',width:100,align:'right'}
+				]]
+			});
+		}
 	},
 
 	tone: {

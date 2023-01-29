@@ -145,7 +145,7 @@ var database = {
 				if (!filter.order) filter.order = 'asc'
 				sql += " ORDER BY " + filter.sort + " " + filter.order;
 			} else {
-				sql += " ORDER BY id DESC";
+				sql += " ORDER BY updateTime DESC";
 			}
 
 			// KPaging

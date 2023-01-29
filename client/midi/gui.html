@@ -27,7 +27,10 @@
 
 				<!-- Tools -->
 				<div data-options="region:'north'" style="height:50px;">
-					Tool 1, Tool 2
+
+					<!-- Button Play -->
+					<a id="btnPlay" href="#" class="easyui-linkbutton" onclick="mt.handler.playMini()" data-options="iconCls:'icon-play'">Play</a>
+
 				</div>
 
 				<!-- Track list -->
@@ -36,7 +39,15 @@
 				
 				<!-- Design -->
 				<div data-options="region:'center'">
+
+					<!-- Text Note -->
+					<input id="textNotes" class="easyui-textbox" data-options="height:300,multiline:true" style="width:300px">
+
+					<!-- Piano Stream -->
 					<canvas id="canvas" style="cursor:crosshair;"></canvas>
+
+					<!-- Danh sách các beat -->
+					<table id="dgMidi"></table>
 				</div>
 				
 				<!-- Properties -->

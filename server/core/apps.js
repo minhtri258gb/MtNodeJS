@@ -12,6 +12,7 @@ var apps = {
 			"calendar",
 			"QR",
 			"OCR",
+			"request"
 		];
 
 		let register = (name) => {

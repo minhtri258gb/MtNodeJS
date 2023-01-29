@@ -93,6 +93,23 @@ var mt = {
 
 	},
 
+	init: function() {
+
+		// Init UI
+		this.tool.bind.init();
+		this.tool.offsetNote.init();
+		this.tool.file.init();
+
+		this.screen.init();
+		this.jzz.init();
+		this.key.init();
+		this.event.init();
+		
+		this.tool.instrument.init(); // after jzz
+
+		this.tool.bind.bindKeyBoard(true);
+	},
+
 	// Component
 	tool: {
 		bind: {
@@ -261,6 +278,198 @@ var mt = {
 
 			// Finally, write it to the document as a link and as an embedded object:
 			document.getElementById('out').innerHTML = 'New file: <a download=lame.mid href=' + uri + '>DOWNLOAD</a>';
+		},
+
+		instrument: {
+
+			h_class: [
+				{ text: ' Piano', value: 0, iconCls:'icon-add' },
+				{ text: ' Chromatic Percussion', value: 8, iconCls:'icon-add' },
+				{ text: ' Organ', value: 16, iconCls:'icon-add' },
+				{ text: ' Guitar', value: 24, iconCls:'icon-add' },
+				{ text: ' Bass', value: 32, iconCls:'icon-add' },
+				{ text: ' Strings', value: 40, iconCls:'icon-add' },
+				{ text: ' Ensemble', value: 48, iconCls:'icon-add' },
+				{ text: ' Brass', value: 56, iconCls:'icon-add' },
+				{ text: ' Reed', value: 64, iconCls:'icon-add' },
+				{ text: ' Pipe', value: 72, iconCls:'icon-add' },
+				{ text: ' Synth Lead', value: 80, iconCls:'icon-add' },
+				{ text: ' Synth Pad', value: 88, iconCls:'icon-add' },
+				{ text: ' Synth Effects', value: 96, iconCls:'icon-add' },
+				{ text: ' Ethnic', value: 104, iconCls:'icon-add' },
+				{ text: ' Percussive', value: 112, iconCls:'icon-add' },
+				{ text: ' Sound Effects', value: 120, iconCls:'icon-add' },
+			],
+
+			h_type: [
+				{ text: '1. Acoustic Grand Piano', value: 0 },
+				{ text: '2. Bright Acoustic Piano', value: 1 },
+				{ text: '3. Electric Grand Piano', value: 2 },
+				{ text: '4. Honky-tonk Piano', value: 3 },
+				{ text: '5. Electric Piano 1', value: 4 },
+				{ text: '6. Electric Piano 2', value: 5 },
+				{ text: '7. Harpsichord', value: 6 },
+				{ text: '8. Clavinet', value: 7 },
+				{ text: '1. elesta', value: 8 },
+				{ text: '2. Glockenspiel', value: 9 },
+				{ text: '3. Music Box', value: 10 },
+				{ text: '4. Vibraphone', value: 11 },
+				{ text: '5. Marimba', value: 12 },
+				{ text: '6. Xylophone', value: 13 },
+				{ text: '7. Tubular Bells', value: 14 },
+				{ text: '8. Dulcimer', value: 15 },
+				{ text: '1. Drawbar Organ', value: 16 },
+				{ text: '2. Percussive Organ', value: 17 },
+				{ text: '3. Rock Organ', value: 18 },
+				{ text: '4. Church Organ', value: 19 },
+				{ text: '5. Reed Organ', value: 20 },
+				{ text: '6. Accordion', value: 21 },
+				{ text: '7. Harmonica', value: 22 },
+				{ text: '8. Tango Accordion', value: 23 },
+				{ text: '1. Acoustic Guitar (nylon)', value: 24 },
+				{ text: '2. Acoustic Guitar (steel)', value: 25 },
+				{ text: '3. Electric Guitar (jazz)', value: 26 },
+				{ text: '4. Electric Guitar (clean)', value: 27 },
+				{ text: '5. Electric Guitar (muted)', value: 28 },
+				{ text: '6. Overdriven Guitar', value: 29 },
+				{ text: '7. Distortion Guitar', value: 30 },
+				{ text: '8. Guitar Harmonics', value: 31 },
+				{ text: '1. Acoustic Bass', value: 32 },
+				{ text: '2. Electric Bass (finger)', value: 33 },
+				{ text: '3. Electric Bass (pick)', value: 34 },
+				{ text: '4. Fretless Bass', value: 35 },
+				{ text: '5. Slap Bass 1', value: 36 },
+				{ text: '6. Slap Bass 2', value: 37 },
+				{ text: '7. Synth Bass 1', value: 38 },
+				{ text: '8. Synth Bass 2', value: 39 },
+				{ text: '1. Violin', value: 40 },
+				{ text: '2. Viola', value: 41 },
+				{ text: '3. Cello', value: 42 },
+				{ text: '4. Contrabass', value: 43 },
+				{ text: '5. Tremolo Strings', value: 44 },
+				{ text: '6. Pizzicato Strings', value: 45 },
+				{ text: '7. Orchestral Harp', value: 46 },
+				{ text: '8. Timpani', value: 47 },
+				{ text: '1. String Ensemble 1', value: 48 },
+				{ text: '2. String Ensemble 2', value: 49 },
+				{ text: '3. Synth Strings 1', value: 50 },
+				{ text: '4. Synth Strings 2', value: 51 },
+				{ text: '5. Choir Aahs', value: 52 },
+				{ text: '6. Voice Oohs', value: 53 },
+				{ text: '7. Synth Choir', value: 54 },
+				{ text: '8. Orchestra Hit', value: 55 },
+				{ text: '1. Trumpet', value: 56 },
+				{ text: '2. Trombone', value: 57 },
+				{ text: '3. Tuba', value: 58 },
+				{ text: '4. Muted Trumpet', value: 59 },
+				{ text: '5. French Horn', value: 60 },
+				{ text: '6. Brass Section', value: 61 },
+				{ text: '7. Synth Brass 1', value: 62 },
+				{ text: '8. Synth Brass 2', value: 63 },
+				{ text: '1. Soprano Sax', value: 64 },
+				{ text: '2. Alto Sax', value: 65 },
+				{ text: '3. Tenor Sax', value: 66 },
+				{ text: '4. Baritone Sax', value: 67 },
+				{ text: '5. Oboe', value: 68 },
+				{ text: '6. English Horn', value: 69 },
+				{ text: '7. Bassoon', value: 70 },
+				{ text: '8. Clarinet', value: 71 },
+				{ text: '1. Piccolo', value: 72 },
+				{ text: '2. Flute', value: 73 },
+				{ text: '3. Recorder', value: 74 },
+				{ text: '4. Pan Flute', value: 75 },
+				{ text: '5. Blown Bottle', value: 76 },
+				{ text: '6. Shakuhachi', value: 77 },
+				{ text: '7. Whistle', value: 78 },
+				{ text: '8. Ocarina', value: 79 },
+				{ text: '1. square', value: 80 },
+				{ text: '2. sawtooth', value: 81 },
+				{ text: '3. calliope', value: 82 },
+				{ text: '4. chiff', value: 83 },
+				{ text: '5. charang', value: 84 },
+				{ text: '6. voice', value: 85 },
+				{ text: '7. fifths', value: 86 },
+				{ text: '8. bass + lead', value: 87 },
+				{ text: '1. new age', value: 88 },
+				{ text: '2. warm', value: 89 },
+				{ text: '3. polysynth', value: 90 },
+				{ text: '4. choir', value: 91 },
+				{ text: '5. bowed', value: 92 },
+				{ text: '6. metallic', value: 93 },
+				{ text: '7. halo', value: 94 },
+				{ text: '8. sweep', value: 95 },
+				{ text: '1. rain', value: 96 },
+				{ text: '2. soundtrack', value: 97 },
+				{ text: '3. crystal', value: 98 },
+				{ text: '4. atmosphere', value: 99 },
+				{ text: '5. brightness', value: 100 },
+				{ text: '6. goblins', value: 101 },
+				{ text: '7. echoes', value: 102 },
+				{ text: '8. sci-fi', value: 103 },
+				{ text: '1. Sitar', value: 104 },
+				{ text: '2. Banjo', value: 105 },
+				{ text: '3. Shamisen', value: 106 },
+				{ text: '4. Koto', value: 107 },
+				{ text: '5. Kalimba', value: 108 },
+				{ text: '6. Bagpipe', value: 109 },
+				{ text: '7. Fiddle', value: 110 },
+				{ text: '8. Shanai', value: 111 },
+				{ text: '1. Tinkle Bell', value: 112 },
+				{ text: '2. Agogo', value: 113 },
+				{ text: '3. Steel Drums', value: 114 },
+				{ text: '4. Woodblock', value: 115 },
+				{ text: '5. Taiko Drum', value: 116 },
+				{ text: '6. Melodic Tom', value: 117 },
+				{ text: '7. Synth Drum', value: 118 },
+				{ text: '8. Reverse Cymbal', value: 119 },
+				{ text: '1. Guitar Fret Noise', value: 120 },
+				{ text: '2. Breath Noise', value: 121 },
+				{ text: '3. Seashore', value: 122 },
+				{ text: '4. Bird Tweet', value: 123 },
+				{ text: '5. Telephone Ring', value: 124 },
+				{ text: '6. Helicopter', value: 125 },
+				{ text: '7. Applause', value: 126 },
+				{ text: '8. Gunshot', value: 127 },
+			],
+
+			instruments_class: null,
+			instruments_type: null,
+
+			init: function() {
+
+				this.instruments_class = $('#instruments_class');
+				this.instruments_type = $('#instruments_type');
+
+				this.instruments_type.combobox({
+					data: null,
+					valueField: 'value', textField: 'text',
+					onSelect: (r) => {
+						mt.jzz.setInstrument(r.value);
+					},
+					onClick: (r) => {
+						mt.jzz.send(72, true);
+						setTimeout(() => {
+							mt.jzz.send(72, false);
+						}, 1000);
+					}
+				});
+
+				this.instruments_class.combobox({
+					value: 16,
+					data: this.h_class,
+					valueField: 'value', textField: 'text',
+					showItemIcon: true,
+					label: 'Instrument:', labelPosition: 'top',
+					onSelect: (r) => {
+						console.log(r)
+						this.instruments_type
+							.combobox('loadData', this.h_type.slice(r.value, r.value + 8))
+							.combobox('setValue', r.value);
+					}
+				});
+				
+			}
+
 		}
 	},
 
@@ -618,8 +827,6 @@ var mt = {
 			this.out = JZZ().openMidiOut().or(()=>{ alert('Cannot open MIDI port!'); });
 			
 			// this.out.volumeF(c, xx);
-			// this.out.program(0, 7); // change program
-			// 0, 16
 		},
 
 		send: function(note, toggle) {
@@ -631,7 +838,11 @@ var mt = {
 			if (toggle)
 				this.out.send([0x90, finalNote, 0x7f]);
 			else
-			this.out.send([0x80, finalNote, 0]);
+				this.out.send([0x80, finalNote, 0]);
+		},
+
+		setInstrument: function(num) { // 0 - 127
+			this.out.program(0, num);
 		}
 
 	},
@@ -814,20 +1025,5 @@ var mt = {
 			return (v==1 || v==3 || v==6 || v==8 || v==10)
 		}
 	},
-
-	init: function() {
-
-		// Init UI
-		this.tool.bind.init();
-		this.tool.offsetNote.init();
-		this.tool.file.init();
-
-		this.screen.init();
-		this.jzz.init();
-		this.key.init();
-		this.event.init();
-
-		this.tool.bind.bindKeyBoard(true);
-	}
 
 };
