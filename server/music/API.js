@@ -78,16 +78,16 @@ var music = {
 		}
 
 		// Return
-		res.json({ total: dataFillter.length, rows: dataFillter });
+		res.json(dataFillter);
 	},
 	api_getMusic: function(req, res) {
 		let file = null;
 		try {
-			file = mt.lib.fs.readFileSync(mt.lib.path.join(music.config.dirMusic + req.query.name + '.mp3'), 'binary');
+			file = mt.lib.fs.readFileSync(mt.lib.path.join(music.config.dirMusic + req.query.filename + '.mp3'), 'binary');
 		} catch (e) {
 			if (e.code == 'ENOENT') {
 				music.database.connect();
-				music.database.miss(req.query.name);
+				music.database.miss(req.query.filename);
 				music.database.disconnect();
 				res.status(404).send("Music not found");
 				return;
@@ -114,21 +114,21 @@ var music = {
 		// Remove file not mp3 and ext .mp3
 		let files = [];
 		for (let i=0; i<files_raw.length; i++) {
-			let name = files_raw[i];
-			if (name.substring(name.length - 4, name.length) == ".mp3")
-				files.push(name.substring(0, name.length - 4));
+			let filename = files_raw[i];
+			if (filename.substring(filename.length - 4, filename.length) == ".mp3")
+				files.push(filename.substring(0, filename.length - 4));
 		}
 
 		// Read database
 		music.database.connect();
-		let datas = music.database.getAllName();
+		let datas = music.database.getAllFilename();
 		music.database.disconnect();
 	
 		// Xoa phan tu trung trong files
 		for (let i=0; i<datas.length; i++) {
 			let data = datas[i];
 			for (let j=0; j<files.length; j++) {
-				if (files[j] == data.name) {
+				if (files[j] == data.filename) {
 					files.splice(j, 1);
 					break;
 				}
@@ -138,11 +138,11 @@ var music = {
 		// Add to result
 		let result = [];
 		for (let i=0; i<files.length; i++)
-			result.push({name: files[i]});
+			result.push({filename: files[i]});
 
 		// Return
 		if (result.length == 0)
-			result.push({name:'empty'});
+			result.push({filename:'empty'});
 		res.send(JSON.stringify(result));
 	},
 	api_add: function(req, res) {
@@ -156,7 +156,7 @@ var music = {
 		// Add to database
 		let data = req.body;
 		music.database.connect();
-		let datas = music.database.getMusicByName(data.name);
+		let datas = music.database.getMusicByFilename(data.filename);
 		if (datas.length > 0) {
 			datas[0].miss = 0;
 			music.database.updateMusic(datas[0]);
@@ -178,11 +178,11 @@ var music = {
 
 		music.database.connect();
 		let data = music.database.getById(req.body.id);
-		// Rename if other name
-		if (data.name != req.body.name) {
+		// Rename if other filename
+		if (data.filename != req.body.filename) {
 			mt.lib.fs.rename(
-				mt.lib.path.join(music.config.dirMusic + data.name + '.mp3'),
-				mt.lib.path.join(music.config.dirMusic + req.body.name + '.mp3'),
+				mt.lib.path.join(music.config.dirMusic + data.filename + '.mp3'),
+				mt.lib.path.join(music.config.dirMusic + req.body.filename + '.mp3'),
 				(error) => {
 					console.log(error);
 				}

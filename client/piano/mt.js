@@ -170,7 +170,6 @@ var mt = {
 				}
 			},
 			loadDone: function(event) {
-				let self = mt.tool.file;
 				let data = event.target.result;
 				mt.midi.loadFromFile(new JZZ.MIDI.SMF(data));
 			}
@@ -461,7 +460,6 @@ var mt = {
 					showItemIcon: true,
 					label: 'Instrument:', labelPosition: 'top',
 					onSelect: (r) => {
-						console.log(r)
 						this.instruments_type
 							.combobox('loadData', this.h_type.slice(r.value, r.value + 8))
 							.combobox('setValue', r.value);
@@ -818,6 +816,9 @@ var mt = {
 	},
 	
 	jzz: {
+		
+		h_cov: ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],
+		
 		init: function() {
 
 			// Register
@@ -834,16 +835,42 @@ var mt = {
 			let finalNote = note + offsetNote;
 			finalNote = Math.max(finalNote, 0);
 			finalNote = Math.min(finalNote, 127);
-			
-			if (toggle)
+
+			if (toggle) {
 				this.out.send([0x90, finalNote, 0x7f]);
+				mt.key._keyname.text("Key: " + finalNote + " - " + mt.jzz.num2name(finalNote)); // Show keyname
+			}
 			else
 				this.out.send([0x80, finalNote, 0]);
 		},
 
 		setInstrument: function(num) { // 0 - 127
 			this.out.program(0, num);
-		}
+		},
+		
+		name2num: function(name) {
+			if (!name.length || name.length < 2)
+				throw('[mt.jzz.num2name] input not midi name');
+			let level = parseInt(name.substring(name.length-1)) + 1;
+			if (isNaN(level) || level < 0 || level > 9)
+				throw('[mt.jzz.num2name] input not midi name');
+			let baseCode = name.substring(0, name.length-1);
+			let baseNum = undefined;
+			for (let i=0; i<12; i++) {
+				if (this.h_cov[i] == baseCode) {
+					baseNum = i;
+					break;
+				}
+			}
+			if (baseNum == undefined)
+				throw('[mt.jzz.num2name] input not midi name');
+			return level * 12 + baseNum;
+		},
+		num2name: function(num) {
+			if (typeof num != 'number' || num < 21 || num > 108)
+				throw('[mt.jzz.num2name] input not number');
+			return this.h_cov[num % 12] + (Math.floor(num / 12) - 1);
+		},
 
 	},
 
@@ -858,7 +885,14 @@ var mt = {
 		**/
 		map: {},
 
+		_keyname: null,
+
 		init: function() {
+
+			// Init component
+			this._keyname = $('#keyname');
+
+			// Init keybind
 			let t = this.bind;
 			// 123
 			t('`', 'D#5'); t('2', 'F#5'); t('3', 'G#5'); t('4', 'Bb5'); t('6', 'C#6'); t('7', 'D#6'); t('9', 'F#6'); t('0', 'G#6'); t('-', 'Bb6');
@@ -1022,7 +1056,7 @@ var mt = {
 
 		checkSharp: function(note) {
 			let v = note % 12;
-			return (v==1 || v==3 || v==6 || v==8 || v==10)
+			return (v==1 || v==3 || v==6 || v==8 || v==10);
 		}
 	},
 

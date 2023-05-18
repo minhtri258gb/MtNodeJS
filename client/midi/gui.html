@@ -4,75 +4,109 @@
 
 	<title>IDIM</title>
     
+	<link rel="shortcut icon" type="image/png" href="/midi/favicon.ico">
 	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/default/easyui.css">
 	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/icon.css">
 	
 	<script type="text/javascript" src="/lib/jquery-3.6.0.min.js"></script>
 	<script type="text/javascript" src="/lib/easyui/jquery.easyui.min.js"></script>
-	<script type="text/javascript" src="/lib/tone/Tone.js"></script>
+	<script type="text/javascript" src="/lib/jzz/JZZ.js"></script>
+	<script type="text/javascript" src="/lib/jzz/JZZ.midi.SMF.js"></script>
+	<script type="text/javascript" src="/lib/jzz/JZZ.gui.Player.js"></script>
+	<script type="text/javascript" src="/lib/jzz/JZZ.synth.Tiny.js"></script>
+	<script type="text/javascript" src="/lib/jzz/JZZ.input.Kbd.js"></script>
 	<script type="text/javascript" src="./mt.js"></script>
 
 </head>
 
-<body style="margin:0;">
+<body class="easyui-layout" data-options="fit:true" style="margin:0;">
 
-	<!-- Tab panel -->
-	<div class="easyui-tabs" data-options="fit:true">
-		
-		<!-- Tab 1 -->
-		<div title="Piano Roll">
+	<!-- Tools -->
+	<div data-options="region:'north'" style="height:100px;">
 
-			<!-- Layout -->
-			<div class="easyui-layout" data-options="fit:true">
+		<!-- General -->
+		<div style="width:40%;height:100%;float:left;">
 
-				<!-- Tools -->
-				<div data-options="region:'north'" style="height:50px;">
+			<!-- Slider Length -->
+			<div id="length"></div>
+			
+		</div>
 
-					<!-- Button Play -->
-					<a id="btnPlay" href="#" class="easyui-linkbutton" onclick="mt.handler.playMini()" data-options="iconCls:'icon-play'">Play</a>
+		<!-- Track -->
+		<div style="width:60%;height:100%;float:left;">
 
-				</div>
-
-				<!-- Track list -->
-				<div id="p" data-options="region:'west'" style="width:100px;">
-				</div>
-				
-				<!-- Design -->
-				<div data-options="region:'center'">
-
-					<!-- Text Note -->
-					<input id="textNotes" class="easyui-textbox" data-options="height:300,multiline:true" style="width:300px">
-
-					<!-- Piano Stream -->
-					<canvas id="canvas" style="cursor:crosshair;"></canvas>
-
-					<!-- Danh sách các beat -->
-					<table id="dgMidi"></table>
-				</div>
-				
-				<!-- Properties -->
-				<div data-options="region:'south'" style="height:50px;">
-					Status
-				</div>
-			</div>
+			<!-- General Button -->
+			<a href="#" class="easyui-linkbutton" onclick="mt.jzz.f1()" data-options="iconCls:'icon-play'">Play</a>
+			<input id="filebox">
+			<a href="#" class="easyui-linkbutton" onclick="mt.jzz.f1()" data-options="iconCls:'icon-save'">Download</a>
 
 		</div>
-		
-		<!-- Tab 1 -->
-		<div title="Arrange" style="display:none;">
-			Tab 2
-		</div>
-		
-		<!-- Tab 1 -->
-		<div title="Tempo" style="display:none;">
-			tab 3
-		</div>
-		
+
 	</div>
 
-<script>
-	mt.init();
-</script>
+	<!-- Track Mgr -->
+	<div data-options="region:'west'" style="width:250px;">
+
+		<!-- Track Mgr -->
+		<input id="tracks" value="0">
+		<a id="btn_trk_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="mt.mgr.onTrackAdd()"></a>
+		<a id="btn_trk_del" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',disabled:true" onclick="mt.mgr.onTrackDel()"></a>
+
+		<!-- Volume Slider -->
+		<input id="volume">
+
+		<!-- PPQN -->
+		<br>
+		<input class="easyui-numberbox" label="PPQN: " labelPosition="left" value="96" data-options="min:0,onChange:mt.mgr.onPPQN" style="width:100%;">
+
+		<!-- BPM -->
+		<br>
+		<input class="easyui-numberbox" label="BPM: " labelPosition="left" value="90" data-options="min:0,onChange:mt.mgr.onBPM" style="width:100%;">
+
+		<!-- List Instrument -->
+		<input id="instruments_class" style="width:100%">
+		<input id="instruments_type" style="width:100%">
+
+	</div>
+	
+	<!-- Design -->
+	<div data-options="region:'center'">
+		<table style="height:100%;">
+			<tr>
+				<!-- NotePad -->
+				<td style="width:306px;border-style:solid;border-width:thin;padding: 2px 2px 2px 2px;">
+					
+					<a id="btn_notepad_compile" href="#" class="easyui-linkbutton" onclick="mt.notepad.btnCompile()" data-options="iconCls:'icon-compile'"></a>
+					<a href="#" class="easyui-linkbutton" onclick="mt.notepad.btnImpSheet()" data-options="iconCls:'icon-back'"></a>
+					<a href="#" class="easyui-linkbutton" onclick="mt.notepad.into()" data-options="iconCls:'icon-up'"></a>
+					<a href="#" class="easyui-linkbutton" onclick="mt.notepad.into()" data-options="iconCls:'icon-down'"></a>
+					<a href="#" class="easyui-linkbutton" onclick="mt.notepad.btnPlay()" data-options="iconCls:'icon-play'"></a>
+
+					<input id="notepad" class="easyui-textbox" data-options="height:500,multiline:true,onChange:mt.notepad.onChange" style="width:300px;">
+
+				</td>
+
+				<!-- Sheet -->
+				<td style="width:306px;border-style:solid;border-width:thin;padding: 2px 2px 2px 2px;">
+					
+					<a id="btn_sheet_compile" href="#" class="easyui-linkbutton" onclick="mt.sheet.btnCompile()" data-options="iconCls:'icon-compile',disabled:true"></a>
+					<a href="#" class="easyui-linkbutton" onclick="mt.sheet.into()" data-options="iconCls:'icon-forward'"></a>
+					<a href="#" class="easyui-linkbutton" onclick="mt.sheet.into()" data-options="iconCls:'icon-up'"></a>
+					<a href="#" class="easyui-linkbutton" onclick="mt.sheet.into()" data-options="iconCls:'icon-down'"></a>
+					<a href="#" class="easyui-linkbutton" onclick="mt.sheet.btnPlay()" data-options="iconCls:'icon-play'"></a>
+					<a href="#" class="easyui-linkbutton" onclick="mt.sheet.reset()" data-options="iconCls:'icon-reset'"></a>
+
+					<canvas id="sheet" style="cursor:crosshair;"></canvas>
+
+				</td>
+			</tr>
+		</table>
+
+	</div>
+
+	<script>
+		mt.init();
+	</script>
 
 </body>
 </html>

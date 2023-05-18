@@ -1,6 +1,4 @@
 var mt = {
-	musics: [],
-	musicCurId: -1,
 	history: [],
 	isPlay: false,
 	isEdit: false,
@@ -13,22 +11,12 @@ var mt = {
 	},
 
 	init: function() {
-		this.c_layout.init();
-		this.c_player.init();
-		this.c_wave.init();
-		this.c_pause.init();
-		this.c_next.init();
-		this.c_back.init();
-		this.c_volumeBar.init();
-		this.c_btnVolume.init();
-		this.c_autoNext.init();
-		this.c_loop.init();
-		this.c_tabInclude.init();
-		this.c_tabExclude.init();
+		this.gui.init();
+		this.player.init();
+		this.visual.init();
 		this.c_listnext.init();
+		this.mgr.init();
 		this.c_list.init();
-		this.c_drawer.init();
-		this.cut.init();
 
 		this.event.init();
 		this.effect.init();
@@ -43,7 +31,100 @@ var mt = {
 		this.quick();
 	},
 
+	gui: {
+		layout: null,
+		init: function() {
+			// Init layout easyUI
+			let c = $('#layout');
+			this.layout = c;
+			c.layout({ fit: true });
+			c.layout('panel', 'center').panel('options').onResize = mt.gui.onCenterResize;
+			c.layout('collapse', 'east');
+		},
+		changeCenterTitle: function(name) {
+			// this.component.layout('panel', 'center').panel({title: 'Name: ' + name});
+			$('#music_title').html(name);
+		},
+		onCenterResize: function(width, height) {
+			let ops = mt.gui.layout.layout('panel', 'center').panel('options');
+			if (mt.c_list.component)
+				mt.c_list.component.datagrid({ width:ops.width - 12, height:ops.height - 48 });
+		},
+		onCollapseRight: function() {
+			if (mt.edit.isOpen)
+				mt.edit.close();
+			else if (mt.new.isOpen)
+				mt.new.close();
+			else if (mt.cut.isOpen)
+				mt.cut.close();
+		},
+		onResizeRight: function() {
+			if (mt.new.isOpen)
+				mt.new.c_list.resize();
+		},
+	},
+
 	mgr: {
+		musics: [], // List music from Server
+
+		init: function() {
+			this.c_tabInclude.init();
+			this.c_tabExclude.init();
+		},
+
+		getListMusic: function(filter) {
+
+			// Call API /music/getListMusic
+			this.musics = $.ajax({
+				type: 'POST',
+				url: '/music/getListMusic',
+				data: filter,
+				async: false
+			}).responseJSON;
+
+			// Add property reference id array
+			for (let i=0; i<this.musics.length; i++) {
+				this.musics[i].idArr = i;
+			}
+			
+		},
+			
+		c_tabInclude: {
+			component: null,
+			init: function() {
+				let c = $('#tagInclude');
+				mt.mgr.c_tabInclude.component = c;
+				c.tagbox({
+					label: 'Include: ',
+					onChange: mt.mgr.c_tabInclude.onChange
+				});
+			},
+			onChange: function(newValue, oldValue) {
+				mt.c_list.reload();
+			},
+			get: function() {
+				return mt.mgr.c_tabInclude.component.tagbox('getValues');
+			}
+		},
+
+		c_tabExclude: {
+			component: null,
+			init: function() {
+				let c = $('#tagExclude');
+				mt.mgr.c_tabExclude.component = c;
+				c.tagbox({
+					label: 'Exclude: ',
+					value: 'less',
+					onChange: mt.mgr.c_tabExclude.onChange
+				});
+			},
+			onChange: function(newValue, oldValue) {
+				mt.c_list.reload();
+			},
+			get: function() {
+				return mt.mgr.c_tabExclude.component.tagbox('getValues');
+			}
+		},
 
 	},
 
@@ -89,18 +170,18 @@ var mt = {
 		pause: function(target) {
 			
 			// mt.event.keydown.space
-			// mt.c_pause.click
+			// mt.player.c_pause.click
 
 			if (this.begin(target))
 				return;
 			
-			if (mt.musicCurId == -1) {
+			if (mt.player.musicIdPlay == -1) {
 				this.next();
 				return;
 			}
 
-			mt.c_player.pause();
-			mt.c_pause.switchIcon();
+			mt.player.pause();
+			mt.player.c_pause.switchIcon();
 
 			this.end(target);
 		},
@@ -110,14 +191,14 @@ var mt = {
 				return;
 
 			// mt.event.keydown.enter
-			// mt.c_next.click
-			// mt.c_player.onEnd
+			// mt.player.c_next.click
+			// mt.player.onEnd
 
 			// If list next have data, get it
 			let row = mt.c_listnext.pop();
 			if (row != null) {
 				// change loop
-				mt.c_loop.set(row.loop);
+				mt.player.c_loop.set(row.loop);
 
 				// change music
 				this.changeMusic(row.stt);
@@ -125,11 +206,11 @@ var mt = {
 			}
 
 			let i = 0;
-			if (mt.c_autoNext.value())
-				i = Math.floor(Math.random() * mt.musics.length);
+			if (mt.player.c_autoNext.value())
+				i = Math.floor(Math.random() * mt.mgr.musics.length);
 			else {
-				i = mt.musicCurId + 1;
-				if (i >= mt.musics.length)
+				i = mt.player.musicIdPlay + 1;
+				if (i >= mt.mgr.musics.length)
 					i = 0;
 			}
 
@@ -142,8 +223,8 @@ var mt = {
 				return;
 
 			// Add history (exception BACK)
-			if (mt.musicCurId != -1 && this._target != "mt.c_back.click")
-				mt.history.push(mt.musicCurId);
+			if (mt.player.musicIdPlay != -1 && this._target != "mt.player.c_back.click")
+				mt.history.push(mt.player.musicIdPlay);
 
 			// Select Row (just UI) and Roll to [exception mt.c_list.selectRow]
 			if (this._target != "mt.c_list.clickRow") {
@@ -152,24 +233,25 @@ var mt = {
 			}
 
 			// Handler
-			mt.musicCurId = musicId;
-			let music = mt.musics[musicId];
+			mt.player.musicIdPlay = musicId;
+			let music = mt.mgr.musics[musicId];
 
 			// Chage name on UI
-			document.title = music.name;
-			mt.c_layout.changeCenterTitle(music.name);
+			let name = music.artists + " - " + music.name;
+			document.title = name;
+			mt.gui.changeCenterTitle(name);
 
 			// Set volume
-			mt.c_volumeBar.setOffset(music.decibel)
-			mt.c_volumeBar.setVolume();
+			mt.player.c_volumeBar.setOffset(music.decibel)
+			mt.player.c_volumeBar.setVolume();
 
 			// Clean Wave
-			mt.c_wave.clear();
+			mt.visual.clear();
 
 			// Load music
 			$.ajax({
 				type: 'GET',
-				url: '/music/getMusic?name='+music.name,
+				url: '/music/getMusic?filename='+music.filename,
 				xhrFields: { responseType: 'arraybuffer'},
 				success: this.changeMusicPost
 			});
@@ -187,18 +269,18 @@ var mt = {
 			mt._blogUrl = URL.createObjectURL(new Blob([res]));
 
 			// Load to player
-			let c = mt.c_player.component[0];
+			let c = mt.player.component[0];
 			c.src = mt._blogUrl;
 			c.pause();
 			c.load();
 			c.oncanplaythrough = c.play();
 
 			// Generate Wave
-			mt.c_wave.generate(res);
+			mt.visual.generate(res);
 
 			// Value
 			mt.isPlay = true;
-			mt.c_pause.switchIcon();
+			mt.player.c_pause.switchIcon();
 
 			mt.handler.end("force");
 		},
@@ -206,7 +288,7 @@ var mt = {
 		share: function() {
 			$.get('/common/getIPLocal', function(data, status) {
 				if (status == 'success') {
-					let url = data.IP + "/music?stt=" + mt.musicCurId;
+					let url = data.IP + "/music?stt=" + mt.player.musicIdPlay;
 					navigator.clipboard.writeText(url).then(function() {
 						$.messager.show({
 							title: 'Notice',
@@ -246,12 +328,13 @@ var mt = {
 				if (event.code === 'Space') {
 					isAction = true;
 					mt.handler.pause("mt.event.keydown.space");
-				} else if (event.code === 'Enter') {
-					if (mt.isEdit == false) {
-						isAction = true;
-						mt.handler.next("mt.event.keydown.enter");
-					}
 				}
+				// else if (event.code === 'Enter') {
+				// 	if (mt.isEdit == false) {
+				// 		isAction = true;
+				// 		mt.handler.next("mt.event.keydown.enter");
+				// 	}
+				// }
 				
 				if (isAction)
 					event.preventDefault();
@@ -261,7 +344,7 @@ var mt = {
 
 		onfocus: function() {
 			window.onfocus = function() {
-				mt.c_list.scrollToCur();
+				// mt.c_list.scrollToCur(); // pause lại
 				mt._focus = true;
 			};
 		},
@@ -277,8 +360,8 @@ var mt = {
 			navigator.mediaSession.setActionHandler('pause', () => { mt.handler.pause("mt.event.media.pause") });
 			// navigator.mediaSession.setActionHandler('seekbackward', function() { alert('seekbackward') });
 			// navigator.mediaSession.setActionHandler('seekforward', function() { alert('seekforward') });
-			navigator.mediaSession.setActionHandler('previoustrack', () => { mt.c_back.onClick() });
-			navigator.mediaSession.setActionHandler('nexttrack', () => { mt.c_next.onClick() });
+			navigator.mediaSession.setActionHandler('previoustrack', () => { mt.player.c_back.onClick() });
+			navigator.mediaSession.setActionHandler('nexttrack', () => { mt.player.c_next.onClick() });
 		},
 
 		changeMusic: function() {
@@ -288,16 +371,16 @@ var mt = {
 		loadedMusic: function() {
 
 			// Wave
-			mt.c_wave._durationTimeLbl.html(mt.util.cov_time(mt.duration));
+			mt.visual._durationTimeLbl.html(mt.util.cov_time(mt.duration));
 
 		},
 
 		playMusic: function() {
-			mt.c_wave.update(this.currentTime);
+			mt.visual.update(this.currentTime);
 			mt.cut.onUpdate(this.currentTime);
 
 			// Wave
-			mt.c_wave._currentTimeLbl.html(mt.util.cov_time(this.currentTime));
+			mt.visual._currentTimeLbl.html(mt.util.cov_time(this.currentTime));
 		},
 
 		endMusic: function() {
@@ -306,89 +389,43 @@ var mt = {
 
 	},
 
-	component: {
+	player: {
 
-	},
-
-	util: {
-
-		cov_time: function(value) {
-			let valueR = Math.floor(value);
-			let minute = Math.floor(valueR/60);
-			let second = valueR%60;
-			if (second < 10) second = '0'+second;
-			return minute+':'+second;
-		},
-
-		cov_time_decimal: function(value) {
-			let backV = value * 100 % 100 / 100;
-			return this.cov_time(value)+backV;
-		}
-	},
-
-	effect: {
-
-		init: function() {
-			this.soundClick.init();
-		},
-
-		soundClick: {
-			_sndClick: null,
-			init: function() {
-				this._sndClick = new Audio('/res/effect/sound/mixkit-video-game-mystery-alert-234.wav');
-			},
-			play: function() {
-				this._sndClick.play();
-			}
-		}
-
-	},
-
-	c_layout: {
 		component: null,
+		musicIdPlay: -1,
 
 		init: function() {
-			let c = $('#layout');
-			this.component = c;
-			c.layout({ fit: true });
-			c.layout('panel', 'center').panel('options').onResize = mt.c_layout.onCenterResize;
-		},
 
-		changeCenterTitle: function(name) {
-			this.component.layout('panel', 'center').panel({title: 'Name: ' + name});
-		},
-
-		onCenterResize: function(width, height) {
-			let ops = mt.c_layout.component.layout('panel', 'center').panel('options');
-			mt.c_list.component.datagrid({ width:ops.width - 12, height:ops.height - 48 });
-		}
-	},
-
-	c_player: {
-		component: null,
-
-		init: function() {
+			// player html
 			let c = $("#player");
 			this.component = c;
-			c.on("ended", mt.c_player.onEnd);
-			c.on("loadeddata", mt.c_player.onLoadedData);
+			c.on("ended", mt.player.onEnd);
+			c.on("loadeddata", mt.player.onLoadedData);
 			c.on("timeupdate", mt.event.playMusic);
-			c.prop("volume", mt.c_volumeBar.base);
+			c.prop("volume", mt.player.c_volumeBar.base);
+			
+			// gui
+			this.c_pause.init();
+			this.c_next.init();
+			this.c_back.init();
+			this.c_volumeBar.init();
+			this.c_btnVolume.init();
+			this.c_autoNext.init();
+			this.c_loop.init();
 		},
 
 		changeMusic: function(index) {
 
-			
 		},
 
 		onEnd: function(event) {
 			let result = mt.cut.onPlayerEnd();
 
 			if (result) {
-				if (mt.c_loop.pop())
-					mt.c_player.replay();
+				if (mt.player.c_loop.pop())
+					mt.player.replay();
 				else
-					mt.handler.next("mt.c_player.onEnd");
+					mt.handler.next("mt.player.onEnd");
 			}
 		},
 
@@ -398,7 +435,7 @@ var mt = {
 			mt.duration = this.duration;
 
 			// List duration
-			if (mt.musics[mt.musicCurId].duration == null) {
+			if (mt.mgr.musics[mt.player.musicIdPlay].duration == null) {
 				let durationStr = mt.util.cov_time(mt.duration);
 				mt.c_list.showDuration(durationStr);
 			}
@@ -417,12 +454,12 @@ var mt = {
 			if (!isNaN(n)) {
 				if (n > 1.0) n = 1.0;
 				else if (n < 0.0) n = 0.0;
-				mt.c_player.component.prop("volume", n);
+				mt.player.component.prop("volume", n);
 			}
 		},
 
 		replay: function() {
-			let c = mt.c_player.component;
+			let c = mt.player.component;
 			c[0].currentTime = 0;
 			c[0].play();
 		},
@@ -439,10 +476,165 @@ var mt = {
 
 		changeTime: function(value) {
 			this.component[0].currentTime = value;
-		}
+		},
+			
+		c_pause: {
+			component: null,
+			init: function() {
+				let c = $("#btnPause");
+				this.component = c;
+			},
+			onClick: function() {
+				mt.handler.pause("mt.player.c_pause.click");
+			},
+			switchIcon: function() {
+				if (mt.isPlay)
+					this.component.linkbutton({ iconCls: 'icon-pause' });
+				else
+					this.component.linkbutton({ iconCls: 'icon-play' });
+			}
+		},
+
+		c_next: {
+			component: null,
+			init: function() {
+				this.component = $("#btnNext");
+			},
+			onClick: function() {
+				mt.handler.next("mt.player.c_next.click");
+			}
+		},
+
+		c_back: {
+			component: null,
+			init: function() {
+				this.component = $("#btnBack");
+			},
+			onClick: function() {
+				if (mt.history.length > 0)
+					mt.handler.changeMusic(mt.history.pop(), "mt.player.c_back.click");
+			}
+		},
+	
+		c_volumeBar: {
+			component: null,
+			base: 0.3,
+			offset: 100.0,
+	
+			init: function() {
+				let c = $('#volumeBar');
+				this.component = c;
+				c.slider({
+					mode: 'v',
+					height: '90px',
+					value: this.base,
+					min: 0.0,
+					max: 1.0,
+					step: 0.02,
+					onChange: this.onChange
+				});
+			},
+	
+			onChange: function(newValue, oldValue) {
+				let self = mt.player.c_volumeBar;
+				self.base = newValue / (self.offset / 100.0);
+				mt.player.setVolume(newValue);
+				mt.player.c_btnVolume.update(newValue);
+			},
+	
+			getVolume: function() {
+				return this.component.slider('getValue');
+			},
+	
+			setVolume: function(volume) {
+				if (volume == undefined)
+					volume = this.base * (this.offset / 100.0);
+				mt.player.c_volumeBar.component.slider('setValue', volume);
+			},
+	
+			setOffset: function(offset) {
+				this.offset = offset;
+			}
+		},
+	
+		c_btnVolume: {
+			component: null,
+			status: 0,
+			oldValue: 0,
+	
+			init: function() {
+				this.component = $('#btnVolume');
+				this.update(mt.player.c_volumeBar.base);
+			},
+	
+			update: function(volume) {
+				if (volume == undefined)
+					volume = mt.player.c_volumeBar.getVolume();
+	
+				let tmpStatus = 0;
+				if (volume > 0.5) tmpStatus = 2;
+				else if (volume > 0) tmpStatus = 1;
+	
+				if (tmpStatus != this.status) {
+					let iconName = 'icon-volume-';
+					switch (tmpStatus) {
+						case 0: iconName = iconName + 'off'; break;
+						case 1: iconName = iconName + 'min'; break;
+						case 2: iconName = iconName + 'max'; break;
+					}
+					this.component.linkbutton({ iconCls: iconName });
+					this.status = tmpStatus;
+				}
+			},
+	
+			onClick: function() {
+				let curVolume = mt.player.c_volumeBar.getVolume();
+	
+				if (curVolume == 0) {
+					mt.player.c_volumeBar.setVolume(this.oldValue);
+				} else {
+					this.oldValue = curVolume;
+					mt.player.c_volumeBar.setVolume(0.0);
+				}
+			}
+		},
+	
+		c_autoNext: {
+			component: null,
+			init: function() {
+				let c = $("#autoNext");
+				this.component = c;
+			},
+			value: function() {
+				return mt.player.c_autoNext.component.switchbutton('options').checked;
+			}
+		},
+	
+		c_loop: {
+			component: null,
+			init: function() {
+				this.component = $("#loop");
+			},
+			pop: function() {
+				let c = this.component;
+				let n = c.numberbox('getValue');
+				if (n.length > 0 && n > 0) {
+					c.numberbox('setValue', n-1);
+					return true;
+				}
+				return false;
+			},
+			get: function() {
+				return parseInt(this.component.numberbox('getValue'));
+			},
+			set: function(n) {
+				this.component.numberbox('setValue', n);
+			}
+		},
+	
 	},
 
-	c_wave: {
+	visual: {
 		_staticWave: null,
 		_curStaticWave: null,
 		_currentTimeLbl: null,
@@ -454,6 +646,10 @@ var mt = {
 		_currentTime: 0,
 		_waveColor1: '#f0f0f0',
 		_waveColor2: '#ffe48d',
+
+		// type visual
+		c_btnSwitch: null,
+		type: true, // true: wave, false: shake
 
 		init: function() {
 			this._staticWave = $('#staticWave');
@@ -473,6 +669,9 @@ var mt = {
 			this._ctx = canvas.getContext('2d');
 
 			this.dynamicWave();
+
+			// Button switch
+			this.c_btnSwitch = $('#visual');
 		},
 
 		clear: function() {
@@ -537,7 +736,7 @@ var mt = {
 
 		clickStatic: function(e) {
 			let curTime = e.offsetX / e.target.offsetWidth * mt.duration;
-			mt.c_player.changeTime(curTime);
+			mt.player.changeTime(curTime);
 		},
 
 		clickDynamic: function() {
@@ -549,7 +748,7 @@ var mt = {
 			if (window.location.href.startsWith('http://localhost/')) {
 				var analyser = this._context.createAnalyser();
 				analyser.fftSize = 512;
-				var source = this._context.createMediaElementSource(mt.c_player.component[0]);
+				var source = this._context.createMediaElementSource(mt.player.component[0]);
 			
 				source.connect(analyser);
 				analyser.connect(this._context.destination);
@@ -571,7 +770,11 @@ var mt = {
 				function renderFrame() {
 					requestAnimationFrame(renderFrame);
 			
-					analyser.getByteFrequencyData(dataArray);
+					if (mt.visual.type)
+						analyser.getByteFrequencyData(dataArray);
+					else
+						analyser.getByteTimeDomainData(dataArray);
+					// analyser.getFloatTimeDomainData(dataArray);
 			
 					ctx.clearRect(0, 0, WIDTH, HEIGHT);
 			
@@ -595,199 +798,407 @@ var mt = {
 			}
 		},
 
+		onChangeType: function(toogle) {
+			let self = mt.visual;
+			self.type = toogle;
+		},
+
 	},
 
-	c_pause: {
-		component: null,
-		init: function() {
-			let c = $("#btnPause");
-			mt.c_pause.component = c;
+	next: {
+		add: function() {
+
+			// Get current music selected
+			let dg = mt.c_list.component;
+			let music = dg.datagrid('getSelected');
+
+			// Push to next list
+			mt.c_listnext.push(music);
+
+			// Effect
+			mt.effect.soundClick.play();
 		},
-		onClick: function() {
-			mt.handler.pause("mt.c_pause.click");
-		},
-		switchIcon: function() {
-			if (mt.isPlay)
-				this.component.linkbutton({ iconCls: 'icon-pause' });
-			else
-				this.component.linkbutton({ iconCls: 'icon-play' });
-		}
 	},
 
-	c_next: {
-		component: null,
-		init: function() {
-			this.component = $("#btnNext");
-		},
-		onClick: function() {
-			mt.handler.next("mt.c_next.click");
-		}
-	},
-
-	c_back: {
-		component: null,
-		init: function() {
-			this.component = $("#btnBack");
-		},
-		onClick: function() {
-			if (mt.history.length > 0)
-				mt.handler.changeMusic(mt.history.pop(), "mt.c_back.click");
-		}
-	},
-
-	c_volumeBar: {
-		component: null,
-		base: 0.3,
-		offset: 100.0,
+	edit: {
+		c_content: null,
+		form: null,
+		isOpen: false,
 
 		init: function() {
-			let c = $('#volumeBar');
-			this.component = c;
-			c.slider({
-				mode: 'v',
-				height: '90px',
-				value: this.base,
-				min: 0.0,
-				max: 1.0,
-				step: 0.02,
-				onChange: this.onChange
+			this.c_content = $("#right_edit");
+			this.form = $("#form_music");
+			this.form.form({
+				url: "/music/edit",
+				success: function(res) { mt.c_list.reload(); },
+				error: function(e) { alert('Fail: '+e); }
 			});
 		},
+		open: function() {
 
-		onChange: function(newValue, oldValue) {
-			let self = mt.c_volumeBar;
-			self.base = newValue / (self.offset / 100.0);
-			mt.c_player.setVolume(newValue);
-			mt.c_btnVolume.update(newValue);
+			// Khởi tạo nếu chưa
+			if (this.c_content == null)
+				this.init();
+
+			// Flag
+			this.isOpen = true;
+			this.c_content.show();
+			mt.gui.layout.layout('panel', 'east').panel({title: 'Edit'});
+
+			// Mở bên phải
+			mt.gui.layout.layout('expand','east');
+
+			// Fill info if have selected music
+			let music = mt.c_list.component.datagrid('getSelected');
+			this.fillData(music);
+
 		},
-
-		getVolume: function() {
-			return this.component.slider('getValue');
+		close: function() {
+			this.isOpen = false;
+			this.c_content.hide();
 		},
-
-		setVolume: function(volume) {
-			if (volume == undefined)
-				volume = this.base * (this.offset / 100.0);
-			mt.c_volumeBar.component.slider('setValue', volume);
-		},
-
-		setOffset: function(offset) {
-			this.offset = offset;
-		}
-	},
-
-	c_btnVolume: {
-		component: null,
-		status: 0,
-		oldValue: 0,
-
-		init: function() {
-			this.component = $('#btnVolume');
-			this.update(mt.c_volumeBar.base);
-		},
-
-		update: function(volume) {
-			if (volume == undefined)
-				volume = mt.c_volumeBar.getVolume();
-
-			let tmpStatus = 0;
-			if (volume > 0.5) tmpStatus = 2;
-			else if (volume > 0) tmpStatus = 1;
-
-			if (tmpStatus != this.status) {
-				let iconName = 'icon-volume-';
-				switch (tmpStatus) {
-					case 0: iconName = iconName + 'off'; break;
-					case 1: iconName = iconName + 'min'; break;
-					case 2: iconName = iconName + 'max'; break;
+		fillData: function(music) {
+			if (this.isOpen && music) {
+				// Fill duration
+				if (music.duration == null && music.id == mt.mgr.musics[mt.player.musicIdPlay].id) {
+					music.duration = mt.duration;
 				}
-				this.component.linkbutton({ iconCls: iconName });
-				this.status = tmpStatus;
+				// Fill data
+				this.form.form('load',{
+					id: music.id,
+					filename: music.filename,
+					name: music.name,
+					artists: music.artists,
+					duration: music.duration,
+					tags: music.tags,
+					decibel: music.decibel,
+					rate: music.rate,
+					trackbegin: music.trackbegin,
+					trackend: music.trackend,
+					miss: music.miss,
+				});
 			}
 		},
-
-		onClick: function() {
-			let curVolume = mt.c_volumeBar.getVolume();
-
-			if (curVolume == 0) {
-				mt.c_volumeBar.setVolume(this.oldValue);
-			} else {
-				this.oldValue = curVolume;
-				mt.c_volumeBar.setVolume(0.0);
-			}
-		}
-	},
-
-	c_autoNext: {
-		component: null,
-		init: function() {
-			let c = $("#autoNext");
-			mt.c_autoNext.component = c;
-		},
-		value: function() {
-			return mt.c_autoNext.component.switchbutton('options').checked;
-		}
-	},
-
-	c_loop: {
-		component: null,
-		init: function() {
-			this.component = $("#loop");
-		},
-		pop: function() {
-			let c = this.component;
-			let n = c.numberbox('getValue');
-			if (n.length > 0 && n > 0) {
-				c.numberbox('setValue', n-1);
-				return true;
-			}
-			return false;
-		},
-		get: function() {
-			return parseInt(this.component.numberbox('getValue'));
-		},
-		set: function(n) {
-			this.component.numberbox('setValue', n);
-		}
-	},
-
-	c_tabInclude: {
-		component: null,
-		init: function() {
-			let c = $('#tagInclude');
-			mt.c_tabInclude.component = c;
-			c.tagbox({
-				label: 'Include: ',
-				onChange: mt.c_tabInclude.onChange
+		onSubmitClick: function() {
+			let self = this;
+			$.messager.confirm('Confirm','Are you sure you want to save data?', function(r) {
+				if (r)
+					self.form.form('submit');
 			});
 		},
-		onChange: function(newValue, oldValue) {
-			mt.c_list.reload();
-		},
-		get: function() {
-			return mt.c_tabInclude.component.tagbox('getValues');
-		}
 	},
 
-	c_tabExclude: {
-		component: null,
+	new: {
+		c_content: null,
+		isOpen: false,
+		lstMusicNew: [],
+
 		init: function() {
-			let c = $('#tagExclude');
-			mt.c_tabExclude.component = c;
-			c.tagbox({
-				label: 'Exclude: ',
-				value: 'less',
-				onChange: mt.c_tabExclude.onChange
+			this.c_content = $("#right_new");
+			this.c_list.init();
+		},
+		open: function() {
+
+			// Check Access
+			if (!mt.authorize) {
+				alert("Access denied");
+				return;
+			}
+
+			// Khởi tạo nếu chưa
+			if (this.c_content == null)
+				this.init();
+
+			// Flag
+			this.isOpen = true;
+			this.c_content.show();
+			mt.gui.layout.layout('panel', 'east').panel({title: 'New Music'});
+
+			// Mở bên phải
+			mt.gui.layout.layout('expand','east');
+
+			// Auto refresh on open
+			this.c_list.resize();
+			this.refresh();
+			
+		},
+		close: function() {
+			this.isOpen = false;
+			this.c_content.hide();
+		},
+		refresh: function() {
+			let self = this;
+			this.c_list.component.datagrid('loading');
+			$.ajax({
+				type: 'POST',
+				url: '/music/refresh',
+				data: {},
+				success: function(res) {
+					self.lstMusicNew = JSON.parse(res);
+					self.c_list.component.datagrid('loadData', self.lstMusicNew);
+				}
 			});
 		},
-		onChange: function(newValue, oldValue) {
-			mt.c_list.reload();
+		add: function() {
+			// mt.c_list.reload();
 		},
-		get: function() {
-			return mt.c_tabExclude.component.tagbox('getValues');
+		c_list: {
+			component: null,
+			init: function() {
+				let c = $('#new_list');
+				this.component = c;
+				c.datagrid({
+					data: [{filename:'empty'}],
+					toolbar: '#new_toolbar',
+					columns:[[
+						{field:'action', title:'', width:70, formatter: function(v,r,i) {
+							if (r.filename == "empty") return '';
+							return '<a href="#" class="newNO" onclick="mt.new.c_list.newNO('+i+')"></a> \
+											<a href="#" class="newOK" onclick="mt.new.c_list.newOK('+i+')"></a>';
+						}},
+						{field:'filename', title:'File Name'},
+					]],
+					onLoadSuccess: function() {
+						$('.newOK').linkbutton({ iconCls:'icon-ok', plain:true });
+						$('.newNO').linkbutton({ iconCls:'icon-no', plain:true });
+
+						$(this).datagrid('loaded');
+					}
+				});
+			},
+			newOK: function(index) {
+				$.ajax({
+					type: 'POST',
+					url: '/music/add',
+					data: mt.new.lstMusicNew[index],
+					success: function(res) {
+						let lst = mt.new.lstMusicNew;
+						lst.splice(index, 1);
+						mt.new.c_list.component.datagrid('loadData', lst);
+						mt.c_list.component.datagrid('reload');
+					}
+				});
+			},
+			newNO: function(index) {
+				let lst = mt.new.lstMusicNew;
+				lst.splice(index, 1);
+				this.component.datagrid('loadData', lst);
+			},
+			resize: function() {
+				this.component.datagrid('resize');
+			},
+		},
+
+	},
+
+	cut: {
+		// old
+		active: false,
+		isTest: false,
+		// new
+		c_content: null,
+		isOpen: false,
+
+		init: function() {
+
+			// old
+			this.c_slider.init();
+			this.c_start.init();
+			this.c_end.init();
+			this.active = true;
+
+			// new
+			this.c_content = $('#right_cut');
+			// ...
+		},
+
+		open: function() {
+			
+			// Khởi tạo nếu chưa
+			if (this.c_content == null)
+				this.init();
+
+			// Flag
+			this.isOpen = true;
+			this.c_content.show();
+			mt.gui.layout.layout('panel', 'east').panel({title: 'Cut'});
+
+			// Mở bên phải
+			mt.gui.layout.layout('expand','east');
+
+			// Fill info if have selected music
+			let music = mt.c_list.component.datagrid('getSelected');
+			this.fill(music);
+
+		},
+
+		close: function() {
+			this.isOpen = false;
+			this.c_content.hide();
+		},
+
+		fill: function(music) {
+			let duration = 0;
+			if (music.duration != null)
+				duration = music.duration;
+			this.c_slider.setRange(duration);
+			this.c_end.set(duration);
+		},
+
+		c_slider: {
+			component: null,
+
+			init: function() {
+				let c = $('#cutSlider');
+				this.component = c;
+				c.slider({
+					width: '100%',
+					range: true,
+					value: [0,100],
+					onChange: mt.cut.c_slider.onChange
+				});
+			},
+
+			onChange: function(newValue, oldValue) {
+				mt.cut.c_start.set(newValue[0]);
+				mt.cut.c_end.set(newValue[1]);
+			},
+
+			setRange: function(maxValue) {
+				this.component.slider({max:maxValue, value: [0, maxValue]});
+				mt.cut.c_start.set(0);
+				mt.cut.c_end.set(maxValue);
+			}
+
+		},
+
+		c_start: {
+
+			component: null,
+			
+			init: function() {
+				this.component = $('#cutStart');
+			},
+
+			get: function() {
+				return this.component.numberbox('getValue');
+			},
+			set: function(value) {
+				this.component.numberbox('setValue',value);
+			}
+		},
+
+		c_end: {
+			component: null,
+			
+			init: function() {
+				this.component = $('#cutEnd');
+			},
+
+			get: function() {
+				return this.component.numberbox('getValue');
+			},
+			set: function(value) {
+				this.component.numberbox('setValue',value);
+			}
+		},
+
+		onChangeMusic: function() {
+			if (!this.active)
+				return;
+			
+			this.c_slider.setRange(mt.duration);
+		},
+
+		onUpdate: function(time) {
+			if (!this.active || !this.isTest)
+				return;
+			
+			if (time > this.c_end.get()) {
+				mt.player.pause(true);
+				this.isTest = false;
+			}
+		},
+
+		onPlayerEnd: function() {
+			if (this.active && this.isTest) {
+				this.isTest = false;
+				return false;
+			}
+
+			return true;
+		},
+		
+		play: function() {
+			this.isTest = true;
+			mt.player.changeTime(this.c_start.get());
+			mt.player.pause(false);
+		},
+
+		save: function() {
+		
+			// Xác nhận lưu
+			$.messager.confirm('Confirm','Are you want to cut this music to track?', function(r) {
+				if (r) {
+					$.ajax({
+						type: 'POST',
+						url: '/music/cut',
+						data: {
+							id: mt.c_list.component.datagrid('getSelected').id
+						},
+						//success: function(res) { mt.c_list.reload(); },
+						//error: function(e) { alert('Fail: '+e); }
+					});
+				}
+			});
+		},
+
+		toogleShow: function() {
+			if (this._cutDiv.is(":visible"))
+				this._cutDiv.hide();
+			else
+				this._cutDiv.show();
+		}
+
+	},
+
+	util: {
+
+		cov_time: function(value) {
+			let valueR = Math.floor(value);
+			let minute = Math.floor(valueR/60);
+			let second = valueR%60;
+			if (second < 10) second = '0'+second;
+			return minute+':'+second;
+		},
+
+		cov_time_decimal: function(value) {
+			let backV = value * 100 % 100 / 100;
+			return this.cov_time(value)+backV;
 		}
 	},
 
+	effect: {
+
+		init: function() {
+			this.soundClick.init();
+		},
+
+		soundClick: {
+			_sndClick: null,
+			init: function() {
+				this._sndClick = new Audio('/res/effect/sound/mixkit-video-game-mystery-alert-234.wav');
+				this._sndClick.volume = 0.5;
+			},
+			play: function() {
+				this._sndClick.play();
+			}
+		}
+
+	},
+
+
+	
 	c_listnext: {
 
 		_listnext: null,
@@ -813,11 +1224,11 @@ var mt = {
 			});
 		},
 
-		push: function(stt, name) {
+		push: function(music) {
 
-			// Case current music
-			if (stt == mt.musicCurId) {
-				mt.c_loop.set(mt.c_loop.get() + 1);
+			// Case current music, increase loop
+			if (music.idArr == mt.player.musicIdPlay) {
+				mt.player.c_loop.set(mt.player.c_loop.get() + 1);
 				return;
 			}
 
@@ -826,7 +1237,7 @@ var mt = {
 			let found = false;
 
 			for (let i in list) {
-				if (stt != list[i].stt)
+				if (music.idArr != list[i].stt)
 					continue;
 				
 				list[i].loop++;
@@ -845,7 +1256,7 @@ var mt = {
 			}
 
 			if (!found) {
-				this._listnext.datalist('appendRow', { stt: stt, name: name, loop: 0 });
+				this._listnext.datalist('appendRow', { stt: music.idArr, name: music.name, loop: 0 });
 			}
 		},
 
@@ -893,17 +1304,17 @@ var mt = {
 					return;
 
 				// Bỏ qua nếu chưa chọn bài
-				if (mt.musicCurId == -1) {
+				if (mt.player.musicIdPlay == -1) {
 					alert("Chưa chọn bài");
 					return;
 				}
 
 				// Tạm ngưng nhạc nếu đang phát
 				if (mt.isPlay)
-					mt.c_pause.onClick();
+					mt.player.c_pause.onClick();
 
 				// Bật chế độ chỉnh sửa
-				mt.c_list.component.datagrid('beginEdit', mt.musicCurId);
+				mt.c_list.component.datagrid('beginEdit', mt.player.musicIdPlay);
 				mt.c_list.rowAction.init();
 
 				// Thay đổi giá trị
@@ -922,14 +1333,14 @@ var mt = {
 					return;
 
 				// Bỏ qua nếu chưa chọn bài
-				if (mt.musicCurId == -1) {
+				if (mt.player.musicIdPlay == -1) {
 					alert("Chưa chọn bài");
 					return;
 				}
 
 				// Tạm ngưng nhạc nếu đang phát
 				if (mt.isPlay)
-					mt.c_pause.onClick();
+					mt.player.c_pause.onClick();
 
 				// Xác nhận xóa
 				$.messager.confirm('Confirm','Are you sure you want to remove music?', function(r) {
@@ -957,14 +1368,14 @@ var mt = {
 					return;
 
 				// Bỏ qua nếu chưa chọn bài
-				if (mt.musicCurId == -1) {
+				if (mt.player.musicIdPlay == -1) {
 					alert("Chưa chọn bài");
 					return;
 				}
 
 				// Tạm ngưng nhạc nếu đang phát
 				if (mt.isPlay)
-					mt.c_pause.onClick();
+					mt.player.c_pause.onClick();
 
 				// Hiển thị cut option
 				mt.cut.toogleShow();
@@ -1007,7 +1418,7 @@ var mt = {
 				let dg = mt.c_list.component;
 
 				// End edit
-				dg.datagrid('endEdit', mt.musicCurId);
+				dg.datagrid('endEdit', mt.player.musicIdPlay);
 				dg.datagrid('hideColumn', 'action');
 
 				// Prepare data
@@ -1024,7 +1435,7 @@ var mt = {
 				});
 
 				// Reset value
-				mt.musicCurId = -1;
+				mt.player.musicIdPlay = -1;
 				mt.isEdit = false;
 			},
 
@@ -1037,7 +1448,7 @@ var mt = {
 
 				// Cancel edit
 				let dg = mt.c_list.component;
-				dg.datagrid('cancelEdit', mt.musicCurId);
+				dg.datagrid('cancelEdit', mt.player.musicIdPlay);
 				dg.datagrid('hideColumn', 'action');
 
 				// // Handler
@@ -1045,7 +1456,7 @@ var mt = {
 				// 	anime.c_datagrid.component.datagrid('deleteRow', 0);
 
 				// Reset value
-				mt.musicCurId = -1;
+				mt.player.musicIdPlay = -1;
 				mt.isEdit = false;
 			}
 		},
@@ -1093,21 +1504,16 @@ var mt = {
 				fitColumns: true,
 				rownumbers: true,
 				singleSelect: true,
-				autoRowHeight:false,
-				pageSize: 50,
-				height: 610,
+				autoRowHeight: false,
 				columns:[[
-					{field:'name', title:'Name', sortable:false, resizable:true, align:'left', editor:'textbox',
-						formatter:function(value, row, index) { return value; }},
+					{field:'artists', title:'Artists', sortable:false, resizable:true, align:'left', editor:'textbox'},
+					{field:'name', title:'Name', sortable:false, resizable:true, align:'left', editor:'textbox'},
 					{field:'duration', title:'Duration', width:'64px', sortable:false, resizable:false, align:'center',
 						formatter:function(v,r,i) {
 							let duration = (v == null ? '' : mt.util.cov_time(v));
 							return '<span id="duration'+r.id+'">'+duration+'</span>';
 						}},
-					{field:'tag', title:'Tag', sortable:false, resizable:true, align:'left', editor:'tagbox'},
-					{field:'decibel', title:'Decibel', width:'64px', sortable:false, resizable:false, align:'center',
-						editor:{ type:'numberbox', options:{ min:0, suffix:'%'}},
-						formatter: function(v,r,i) { return v+'%' }},
+					{field:'tags', title:'Tags', sortable:false, resizable:true, align:'left', editor:'tagbox'},
 					{field:'rate', title:'Rate', width:60, align:'center', sortable:true, editor:{type:'numberspinner', options:{min:1, max:5}}, formatter: function(v,r,i) {
 						return '<span class="rating l-btn-icon icon-rating'+v+'" style="position:initial;margin-top:0px"></span>';
 					}},
@@ -1115,54 +1521,51 @@ var mt = {
 						return '<div id="action'+r.id+'"></div>';
 					}}
 				]],
-				onClickRow: function(index,row) {
-					if (mt.isEdit) {
-						// Neu dang edit, ko cho chon row khac
-						mt.c_list.component.datagrid('selectRow', mt.musicCurId);
-						return false;
-					}
-
-					mt.c_listnext.push(index, row.name);
-					
-					mt.c_list.component.datagrid('unselectRow', index);
-					// mt.c_list.component.datagrid('selectRow', mt.musicCurId);
-
-					mt.effect.soundClick.play();
-
-					return false;
+				onSelect: function(i,r) {
+					mt.edit.fillData(r);
 				},
+				// onClickRow: function(index,row) {
+				// 	if (mt.isEdit) {
+				// 		// Neu dang edit, ko cho chon row khac
+				// 		mt.c_list.component.datagrid('selectRow', mt.player.musicIdPlay);
+				// 		return false;
+				// 	}
+
+				// 	mt.c_list.component.datagrid('unselectRow', index);
+				// 	// mt.c_list.component.datagrid('selectRow', mt.player.musicIdPlay);
+
+				// 	mt.effect.soundClick.play();
+
+				// 	return false;
+				// },
 				onDblClickRow: function(index,row) {
 					if (mt.isEdit) {
 						// Neu dang edit, ko cho chon row khac
-						mt.c_list.component.datagrid('selectRow', mt.musicCurId);
+						mt.c_list.component.datagrid('selectRow', mt.player.musicIdPlay);
 						return false;
 					}
 					mt.handler.changeMusic(index, "mt.c_list.dupClickRow");
-					mt.c_listnext.removeDupClick();
-				}
+					// mt.c_listnext.removeDupClick();
+				},
 			});
 		},
 		getData: function() {
 
-			let inc = mt.c_tabInclude.get();
-			let exc = mt.c_tabExclude.get();
+			// Lấy filter
+			let inc = mt.mgr.c_tabInclude.get();
+			let exc = mt.mgr.c_tabExclude.get();
 
-			// Tải dữ liệu về
-			let res = $.ajax({
-				type: 'POST',
-				url: '/music/getListMusic',
-				data: {
-					include: inc,
-					exclude: exc
-				},
-				async: false
-			}).responseJSON;
+			// Tải dữ liệu về từ filter 
+			mt.mgr.getListMusic({
+				include: inc,
+				exclude: exc
+			});
 
-			// Lưu toàn cục
-			mt.musics = res.rows;
-
-			// Kết quả
-			return res;
+			// Trả kết quả
+			return {
+				rows: mt.mgr.musics,
+				total: mt.mgr.musics.length
+			};
 		},
 		showDuration: function(durationStr) {
 			let mID = mt.c_list.component.datagrid('getSelected').id;
@@ -1178,100 +1581,11 @@ var mt = {
 			}
 		},
 		scrollToCur: function() {
-			mt.c_list.component.datagrid('scrollTo', mt.musicCurId);
-		}
-	},
-
-	c_drawer: {
-		component: null,
-		lstMusicNew: [],
-		c_list: {
-			component: null,
-			init: function() {
-				let c = $('#list_new');
-				this.component = c;
-				c.datagrid({
-					data: [{name:'empty'}],
-					toolbar: '#toolbar_new',
-					rownumbers: true,
-					columns:[[
-						{field:'name', title:'Name', width:630},
-						{field:'action', title:'', width:70, formatter: function(v,r,i) {
-							if (r.name == "empty") return '';
-							return '<a href="#" class="newOK" onclick="mt.c_drawer.c_list.newOK('+i+')"></a> \
-									<a href="#" class="newNO" onclick="mt.c_drawer.c_list.newNO('+i+')"></a>';
-						}}
-					]],
-					onLoadSuccess: function() {
-						$('.newOK').linkbutton({ iconCls:'icon-ok', plain:true });
-						$('.newNO').linkbutton({ iconCls:'icon-no', plain:true });
-
-						$(this).datagrid('loaded');
-					}
-				});
-			},
-			newOK: function(index) {
-				$.ajax({
-					type: 'POST',
-					url: '/music/add',
-					data: mt.c_drawer.lstMusicNew[index],
-					success: function(res) {
-						let lst = mt.c_drawer.lstMusicNew;
-						lst.splice(index, 1);
-						mt.c_drawer.c_list.component.datagrid('loadData', lst);
-						mt.c_list.component.datagrid('reload');
-					}
-				});
-			},
-			newNO: function(index) {
-				let lst = mt.c_drawer.lstMusicNew;
-				lst.splice(index, 1);
-				this.component.datagrid('loadData', lst);
-			}
-		},
-		init: function() {
-			let c = $('#drawer');
-			this.component = c;
-			c.drawer({
-				width: 750,
-				region:'east',
-				onCollapse: this.onCollapse
-			});
-		},
-		open: function() {
-			if (!mt.authorize) {
-				alert("Access denied");
-				return;
-			}
-
-			// Init component
-			this.c_list.init();
-
-			// Open list new
-			this.component.drawer('expand');
-
-			// Auto refresh on open
-			this.refresh();
-		},
-		refresh: function() {
-			this.c_list.component.datagrid('loading');
-			$.ajax({
-				type: 'POST',
-				url: '/music/refresh',
-				data: {},
-				success: function(res) {
-					mt.c_drawer.lstMusicNew = JSON.parse(res);
-					mt.c_drawer.c_list.component.datagrid('loadData', mt.c_drawer.lstMusicNew);
-				}
-			});
-		},
-		onCollapse: function() {
-			mt.c_list.reload();
+			mt.c_list.component.datagrid('scrollTo', mt.player.musicIdPlay);
 		}
 	},
 
 	// Handler
-
 	set_authorize: function() {
 		$.ajax({
 			type: 'POST',
@@ -1283,134 +1597,4 @@ var mt = {
 		});
 	},
 
-	cut: {
-		_cutDiv: null,
-		active: false,
-		isTest: false,
-
-		init: function() {
-
-			this._cutDiv = $('#cutDiv');
-
-			this.c_slider.init();
-			this.c_start.init();
-			this.c_end.init();
-			this.active = true;
-		},
-
-		c_slider: {
-			component: null,
-
-			init: function() {
-				let c = $('#cutSlider');
-				this.component = c;
-				c.slider({
-					width: '100%',
-					range: true,
-					value: [0,100],
-					onChange: mt.cut.c_slider.onChange
-				});
-			},
-
-			onChange: function(newValue, oldValue) {
-				mt.cut.c_start.set(newValue[0]);
-				mt.cut.c_end.set(newValue[1]);
-			},
-
-			setRange: function(maxValue) {
-				this.component.slider({max:maxValue, value: [0, maxValue]});
-				mt.cut.c_start.set(0);
-				mt.cut.c_end.set(maxValue);
-			}
-
-		},
-
-		c_start: {
-			component: null,
-			
-			init: function() {
-				this.component = $('#cutStart');
-			},
-
-			get: function() {
-				return this.component.numberbox('getValue');
-			},
-			set: function(value) {
-				this.component.numberbox('setValue',value);
-			}
-		},
-
-		c_end: {
-			component: null,
-			
-			init: function() {
-				this.component = $('#cutEnd');
-			},
-
-			get: function() {
-				return this.component.numberbox('getValue');
-			},
-			set: function(value) {
-				this.component.numberbox('setValue',value);
-			}
-		},
-
-		onChangeMusic: function() {
-			if (!this.active)
-				return;
-			
-			this.c_slider.setRange(mt.duration);
-		},
-
-		onUpdate: function(time) {
-			if (!this.active || !this.isTest)
-				return;
-			
-			if (time > this.c_end.get()) {
-				mt.c_player.pause(true);
-				this.isTest = false;
-			}
-		},
-
-		onPlayerEnd: function() {
-			if (this.active && this.isTest) {
-				this.isTest = false;
-				return false;
-			}
-
-			return true;
-		},
-		
-		play: function() {
-			this.isTest = true;
-			mt.c_player.changeTime(this.c_start.get());
-			mt.c_player.pause(false);
-		},
-
-		save: function() {
-		
-			// Xác nhận lưu
-			$.messager.confirm('Confirm','Are you want to cut this music to track?', function(r) {
-				if (r) {
-					$.ajax({
-						type: 'POST',
-						url: '/music/cut',
-						data: {
-							id: mt.c_list.component.datagrid('getSelected').id
-						},
-						//success: function(res) { mt.c_list.reload(); },
-						//error: function(e) { alert('Fail: '+e); }
-					});
-				}
-			});
-		},
-
-		toogleShow: function() {
-			if (this._cutDiv.is(":visible"))
-				this._cutDiv.hide();
-			else
-				this._cutDiv.show();
-		}
-
-	}
 }

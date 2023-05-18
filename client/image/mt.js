@@ -2,6 +2,12 @@ var mt = {
 
 	image: null,
 
+	gui: {
+
+		layout: null,
+		
+	},
+
 	content: {
 		width: 0,
 		height: 0,

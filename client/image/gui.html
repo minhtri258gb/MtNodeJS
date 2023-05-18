@@ -11,26 +11,73 @@
 	<link rel="stylesheet" type="text/css" href="/lib/easyui/themes/icon.css">
 	<link rel="stylesheet" type="text/css" href="/music/style.css">
 
-	<script type="text/javascript" src="/lib/jquery/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="/lib/jquery-3.6.0.min.js"></script>
 	<script type="text/javascript" src="/lib/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="/lib/svg/svg.min.js"></script>
 	<!-- <script type="text/javascript" src="/common/js/Config.js"></script> -->
-	<script type="text/javascript" src="/imageHandler/handler.js"></script>
+	<script type="text/javascript" src="./mt.js"></script>
 </head>
 
-<body>
-	
-	<input id="file" class="easyui-filebox" style="width:300px">
+<body >
 
-	<a id="btn" href="#" class="easyui-linkbutton" onclick="handler.upload()">easyui</a>
+	<div id="tabs" class="easyui-tabs" data-options="fit:true" style="width:500px;height:250px;">
 
-	<div id="dd" class="easyui-draggable" data-options="handle:'#title'" style="width:100px;height:100px;">
-		<div id="title" style="background:#ccc;">title</div>
+    <div title="Sticker" style="padding:20px;display:none;">
+			
+			<div id="layout" class="easyui-layout" data-options="fit:true">
+
+				<!-- <div data-options="region:'north',title:'North Title',split:true" style="height:100px;"></div> -->
+		
+				<!-- <div data-options="region:'east',title:'East',split:true" style="width:100px;"></div> -->
+		
+				<div data-options="region:'west',title:'West',split:true" style="width:100px;">
+				
+					<input id="file" class="easyui-filebox" style="width:300px">
+		
+					<a id="btn" href="#" class="easyui-linkbutton" onclick="handler.upload()">easyui</a>
+				
+					<div id="dd" class="easyui-draggable" data-options="handle:'#title'" style="width:100px;height:100px;">
+						<div id="title" style="background:#ccc;">title</div>
+					</div>
+		
+					<div id="content"></div>
+		
+				</div>
+		
+				<div data-options="region:'center',title:'center title'" style="padding:5px;background:#eee;">
+				
+				</div>
+		
+				<!-- <div data-options="region:'south',title:'South Title',split:true" style="height:100px;"></div> -->
+		
+			</div>
+		
+    </div>
+
+    <div title="Template" data-options="iconCls:'icon-reload',closable:true" style="display:none;">
+			Template
+			Chỉnh text cho meme
+    </div>
+
+    <div title="Editor" data-options="iconCls:'icon-reload',closable:true" style="display:none;">
+			Editor
+			Kéo hoặc chọn ảnh rồi chỉnh sửa
+    </div>
+
+    <div title="Wallpaper" data-options="iconCls:'icon-reload',closable:true" style="display:none;">
+			Wallpaper
+    </div>
+
+    <div title="Albums" data-options="closable:true" style="overflow:auto;padding:20px;display:none;">
+			Albums
+			Lưu face link contact
+    </div>
+		
 	</div>
 
-
 	<script>
-		handler.init();
+		mt.init();
 	</script>
-</body>
 
+</body>
 </html>

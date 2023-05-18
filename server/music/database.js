@@ -23,6 +23,9 @@ var database = {
 	insertMusic: function(data) {
 		if (data.id != undefined)
 			delete data.id;
+		// Check if name is null, set file name same
+		if (!data.name)
+			data.name = data.filename;
 		mt.lib.sqlite.insert("music", data, function(newID) {});
 	},
 	 
@@ -33,12 +36,12 @@ var database = {
 	},
 
 	selectAll: function() {
-		return mt.lib.sqlite.run("SELECT * FROM music WHERE miss = 0 ORDER BY name");
+		return mt.lib.sqlite.run("SELECT * FROM music WHERE miss = 0 ORDER BY artists, name");
 	},
 
 	// Advanced
-	getAllName: function() {
-		return mt.lib.sqlite.run("SELECT name FROM music WHERE miss = 0");
+	getAllFilename: function() {
+		return mt.lib.sqlite.run("SELECT filename FROM music WHERE miss = 0");
 	},
 
 	getById: function(id) {
@@ -46,9 +49,9 @@ var database = {
 		return datas[0] || null;
 	},
 
-	miss: function(name) {
+	miss: function(filename) {
 		let rows_modified = 0;
-		let datas = this.getMusicByName(name);
+		let datas = this.getMusicByFilename(filename);
 		if (datas.length > 0) {
 			let data = datas[0];
 			data.miss = 1;
@@ -59,8 +62,8 @@ var database = {
 		return rows_modified;
 	},
 
-	getMusicByName: function(name) {
-		return mt.lib.sqlite.run("SELECT * FROM music WHERE name = \""+name+"\"");
+	getMusicByFilename: function(filename) {
+		return mt.lib.sqlite.run("SELECT * FROM music WHERE filename = \""+filename+"\"");
 	},
 
 	music: {

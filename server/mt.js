@@ -32,6 +32,7 @@ var mt = {
 		this.lib.register('socket', 'socket.io');
 		this.lib.register('fs', 'fs');
 		this.lib.register('bodyParser', 'body-parser');
+		this.lib.register('cors', 'cors');
 
 		// Hidden console
 		if (!mt.config.debug) {
@@ -43,6 +44,7 @@ var mt = {
 		this.core.app = this.lib.express();
 
 		// Register default
+		this.core.app.use(this.lib.cors());
 		this.core.app.use("/", this.lib.express.static('./client')); // Static
 		this.core.app.get("/", (req, res) => { // Home
 			res.sendFile(this.lib.path.join(__dirname, '../client', '/common/home.html'));
