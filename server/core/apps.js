@@ -12,7 +12,9 @@ var apps = {
 			"calendar",
 			"QR",
 			"OCR",
-			"request"
+			"request",
+			"contact",
+			"api",
 		];
 
 		let register = (name) => {
@@ -30,7 +32,7 @@ var apps = {
 
 		require('../3D/engine.js').register(mt);
 		require('../manager/manager.js').register(mt);
-		require('../localNetwork/API.js').register(mt);
+		// require('../localNetwork/API.js').register(mt);
 
 		// Common API
 		mt.app['common'] = require("../common/API.js");
