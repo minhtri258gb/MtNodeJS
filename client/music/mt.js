@@ -1,5 +1,5 @@
 var mt = {
-	history: [],
+	
 	isPlay: false,
 	isEdit: false,
 	duration: 0,
@@ -65,7 +65,9 @@ var mt = {
 	},
 
 	mgr: {
+		
 		musics: [], // List music from Server
+		history: [],
 
 		init: function() {
 			this.c_tabInclude.init();
@@ -88,7 +90,7 @@ var mt = {
 			}
 			
 		},
-			
+
 		c_tabInclude: {
 			component: null,
 			init: function() {
@@ -161,7 +163,7 @@ var mt = {
 			// Auto play
 			setTimeout(() => {
 				if (param.stt != null && !isNaN(param.stt))
-					mt.c_listnext.push(param.stt, '');
+					mt.c_listnext.push({idArr: param.stt});
 
 				mt.handler.next("auto");
 			}, 1000);
@@ -224,7 +226,7 @@ var mt = {
 
 			// Add history (exception BACK)
 			if (mt.player.musicIdPlay != -1 && this._target != "mt.player.c_back.click")
-				mt.history.push(mt.player.musicIdPlay);
+				mt.mgr.history.push(mt.player.musicIdPlay);
 
 			// Select Row (just UI) and Roll to [exception mt.c_list.selectRow]
 			if (this._target != "mt.c_list.clickRow") {
@@ -378,6 +380,7 @@ var mt = {
 		playMusic: function() {
 			mt.visual.update(this.currentTime);
 			mt.cut.onUpdate(this.currentTime);
+			mt.track.onUpdate(this.currentTime);
 
 			// Wave
 			mt.visual._currentTimeLbl.html(mt.util.cov_time(this.currentTime));
@@ -419,9 +422,10 @@ var mt = {
 		},
 
 		onEnd: function(event) {
-			let result = mt.cut.onPlayerEnd();
+			let res1 = mt.cut.onPlayerEnd();
+			let res2 = mt.track.onPlayerEnd();
 
-			if (result) {
+			if (res1 && res2) {
 				if (mt.player.c_loop.pop())
 					mt.player.replay();
 				else
@@ -445,6 +449,9 @@ var mt = {
 			
 			// Tool cut
 			mt.cut.onChangeMusic();
+
+			// Tool Track
+			mt.track.onChangeMusic();
 
 			// Call Event
 			mt.event.loadedMusic();
@@ -511,8 +518,8 @@ var mt = {
 				this.component = $("#btnBack");
 			},
 			onClick: function() {
-				if (mt.history.length > 0)
-					mt.handler.changeMusic(mt.history.pop(), "mt.player.c_back.click");
+				if (mt.mgr.history.length > 0)
+					mt.handler.changeMusic(mt.mgr.history.pop(), "mt.player.c_back.click");
 			}
 		},
 	
@@ -647,6 +654,8 @@ var mt = {
 		_waveColor1: '#f0f0f0',
 		_waveColor2: '#ffe48d',
 
+		staticGenSizeW: 0, // Fix lỗi resize để static ko bị scale
+
 		// type visual
 		c_btnSwitch: null,
 		type: true, // true: wave, false: shake
@@ -687,6 +696,7 @@ var mt = {
 
 				let w = this._staticWave[0].clientWidth;
 				let h = this._staticWave[0].clientHeight;
+				this.staticGenSizeW = w;
 				
 				this._staticWave[0].width = w;
 				this._staticWave[0].height = h;
@@ -721,6 +731,12 @@ var mt = {
 			let h = this._staticWave[0].clientHeight;
 			let pos = currentTime / mt.duration * w;
 
+
+			// Cập nhật vị trí thanh current
+			this._curStaticWave.css('left',pos);
+			
+			// Vẽ current cho static
+			pos = pos * this.staticGenSizeW / w; // Fix lỗi scale khi resize window
 			if (currentTime > this._currentTime) {
 				this._ctx.fillStyle = this._waveColor2;
 				this._ctx.fillRect(0, 0, pos, h);
@@ -728,8 +744,6 @@ var mt = {
 				this._ctx.fillStyle = this._waveColor1;
 				this._ctx.fillRect(pos, 0, w, h);
 			}
-
-			this._curStaticWave.css('left',pos);
 
 			this._currentTime = currentTime;
 		},
@@ -1036,7 +1050,7 @@ var mt = {
 			this.isOpen = false;
 			this.c_content.hide();
 		},
-
+	
 		fill: function(music) {
 			let duration = 0;
 			if (music.duration != null)
@@ -1162,6 +1176,71 @@ var mt = {
 
 	},
 
+	track: {
+		isActive: false, // Đang chạy track hay ko
+		timeStart: 0, // Thời gian bắt đầu track
+		timeEnd: 0, // Thời gian ngưng track
+		play: function() {
+
+			// Lấy bài hiện tại
+			let music = mt.c_list.component.datagrid('getSelected');
+
+			// Bỏ qua nếu chưa chọn bài
+			if (music == null) {
+				alert("Chưa chọn bài");
+				return;
+			}
+
+			// Kiểm tra lưu track info chưa
+			if ( music.trackbegin == null
+				|| music.trackbegin == ''
+				|| music.trackend == null
+				|| music.trackend == ''
+			) {
+				alert("Chưa có thông tin track");
+				return;
+			}
+
+			// Lưu thông số lại
+			this.timeStart = music.trackbegin;
+			this.timeEnd = music.trackend
+
+			// Thực hiện chạy track
+			this.isActive = true;
+
+			if (mt.player.musicIdPlay != music.idArr) {
+				mt.handler.changeMusic(music.idArr);
+			}
+			else {
+				mt.player.changeTime(this.timeStart);
+				mt.player.pause(false);
+			}
+		},
+		onChangeMusic: function() {
+			if (!this.isActive)
+				return;
+			
+			mt.player.changeTime(this.timeStart);
+		},
+		onUpdate: function(time) {
+			if (!this.isActive)
+				return;
+			
+			if (time > this.timeEnd) {
+				mt.player.pause(true);
+				this.isActive = false;
+			}
+		},
+		onPlayerEnd: function() {
+			if (this.isActive) {
+				this.isActive = false;
+				return false;
+			}
+
+			return true;
+		},
+	},
+
 	util: {
 
 		cov_time: function(value) {
@@ -1197,8 +1276,6 @@ var mt = {
 
 	},
 
-
-	
 	c_listnext: {
 
 		_listnext: null,
@@ -1380,7 +1457,7 @@ var mt = {
 				// Hiển thị cut option
 				mt.cut.toogleShow();
 				
-			}
+			},
 		},
 		rowAction: {
 
