@@ -13,7 +13,7 @@ var database = {
 	},
 
 	connect: function() {
-		mt.lib.sqlite.connect("./server/music/db.sqlite");
+		mt.lib.sqlite.connect("./src/music/db.sqlite");
 	},
 
 	disconnect: function() {

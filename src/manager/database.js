@@ -13,7 +13,7 @@ var database = {
 	},
 
 	connect: function() {
-		mt.lib.sqlite.connect("./server/manager/db.sqlite");
+		mt.lib.sqlite.connect("./src/manager/db.sqlite");
 	},
 
 	disconnect: function() {

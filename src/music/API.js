@@ -6,6 +6,7 @@ var music = {
 	database: require('./database'),
 
 	init: function(_mt) {
+		console.log("RUN") // #TODO
 		mt = _mt;
 
 		// Library

@@ -15,7 +15,7 @@ var manager = {
 				mt.app.manager = manager;
 				manager.init();
 			}
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/manager.html'));
+			res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+"/manager/manager.html"));
 		});
 	},
 
@@ -40,7 +40,7 @@ var manager = {
 				mt.app.manager.anime.action = true;
 				mt.app.manager.anime.init();
 			}
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/anime.html'));
+			res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+"/manager/anime.html"));
 		},
 		init: function() {
 
@@ -99,7 +99,7 @@ var manager = {
 				mt.app.manager.film.action = true;
 				mt.app.manager.film.init();
 			}
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/film.html'));
+			res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+"/manager/film.html"));
 		},
 		init: function() {
 
@@ -114,7 +114,7 @@ var manager = {
 				mt.app.manager.movie.action = true;
 				mt.app.manager.movie.init();
 			}
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/movie.html'));
+			res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+"/manager/movie.html"));
 		},
 		init: function() {
 
@@ -129,7 +129,7 @@ var manager = {
 				mt.app.manager.manga.action = true;
 				mt.app.manager.manga.init();
 			}
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/manga.html'));
+			res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+"/manager/manga.html"));
 		},
 		init: function() {
 
@@ -144,7 +144,7 @@ var manager = {
 				mt.app.manager.game.action = true;
 				mt.app.manager.game.init();
 			}
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/game.html'));
+			res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+"/manager/game.html"));
 		},
 		init: function() {
 
@@ -203,7 +203,7 @@ var manager = {
 				mt.app.manager.account.action = true;
 				mt.app.manager.account.init();
 			}
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/manager/account.html'));
+			res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+"/manager/account.html"));
 		},
 		init: function() {
 

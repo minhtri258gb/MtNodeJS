@@ -2,7 +2,7 @@
 	"configurations": [
 		{
 			"name": "npm debug",
-			"program": "${workspaceFolder}/server/production.js",
+			"program": "${workspaceFolder}/src/development.js",
 			"request": "launch",
 			"skipFiles": [
 				"<node_internals>/**"

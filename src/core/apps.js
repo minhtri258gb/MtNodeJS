@@ -18,12 +18,15 @@ var apps = {
 		];
 
 		let register = (name) => {
+
 			mt.core.app.get("/"+name, (req, res) => {
+
 				if (mt.app[name] == undefined) {
 					mt.app[name] = require("../"+name+"/API.js");
 					mt.app[name].init(mt);
 				}
-				res.sendFile(mt.lib.path.join(__dirname, "../../client", name, "gui.html"));
+
+				res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+name+"/"+"index.html"));
 			});
 		}
 

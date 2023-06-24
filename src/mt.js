@@ -43,19 +43,19 @@ var mt = {
 		// Core
 		this.core.app = this.lib.express();
 
+		// App
+		this.app.register(this);
+
 		// Register default
 		this.core.app.use(this.lib.cors());
-		this.core.app.use("/", this.lib.express.static('./client')); // Static
+		this.core.app.use("/", this.lib.express.static(this.config.client_path)); // Static
 		this.core.app.get("/", (req, res) => { // Home
-			res.sendFile(this.lib.path.join(__dirname, '../client', '/common/home.html'));
+			res.sendFile(this.lib.path.join(__dirname, '../', this.config.client_path, '/common/home.html'));
 		});
 		this.core.app.use(mt.lib.bodyParser.json()); // to support JSON-encoded bodies
 		this.core.app.use(mt.lib.bodyParser.urlencoded({ // to support URL-encoded bodies
 			extended: true
 		}));
-
-		// App
-		this.app.register(this);
 
 		// Server
 		this.core.server = this.lib.http.createServer(this.core.app);

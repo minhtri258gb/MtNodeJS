@@ -1,5 +1,7 @@
 module.exports = {
 
-	debug: false	
+	debug: false,
+
+	client_path: "../MtClient/"
 
 }
