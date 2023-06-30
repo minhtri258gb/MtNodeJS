@@ -24,7 +24,7 @@ var common = {
 			for (let net of wifi) {
 				const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4;
 				if (net.family === familyV4Value && !net.internal) {
-					res.status(200).json({IP: net.address});
+					res.status(200).json(net.address);
 					return;
 				}
 			}

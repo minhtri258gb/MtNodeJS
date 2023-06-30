@@ -24,7 +24,7 @@
 // }
 
 let mtTools = function(toogle) {
-	require('child_process').spawnSync('./server/tools/HiddenConsole/hidden.exe', [toogle ? 1 : 0], {stdio: 'inherit'});
+	require('child_process').spawnSync('./tools/HiddenConsole/hidden.exe', [toogle ? 1 : 0], {stdio: 'inherit'});
 }
 
 module.exports = mtTools;

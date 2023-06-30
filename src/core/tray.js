@@ -52,7 +52,7 @@ var tray = {
 	},
 
 	loadIcon: function() {
-		let filepath = mt.lib.path.join(__dirname, '../../client', 'favicon.ico');
+		let filepath = mt.lib.path.join(__dirname, '../../res', 'logo.ico');
 		data = mt.lib.fs.readFileSync(filepath);
 		return data.toString('base64');
 	},

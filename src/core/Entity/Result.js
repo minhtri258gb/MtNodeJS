@@ -7,6 +7,6 @@ module.exports = {
 
 	Fail: function(message)
 	{
-		return { error: false, data: message };
+		return { error: true, data: null, message: message };
 	}
 }
