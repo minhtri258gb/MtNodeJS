@@ -1,7 +1,7 @@
 {
 	"configurations": [
 		{
-			"name": "npm debug",
+			"name": "Debug",
 			"program": "${workspaceFolder}/src/development.js",
 			"request": "launch",
 			"skipFiles": [

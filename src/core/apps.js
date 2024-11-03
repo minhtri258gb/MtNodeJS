@@ -1,6 +1,8 @@
+var mt = null;
 var apps = {
 
-	register: function(mt) {
+	register: function(_mt) {
+		mt = _mt;
 
 		let listApp = [
 			"test",
@@ -34,8 +36,11 @@ var apps = {
 			register(listApp[i]);
 
 		require('../3D/engine.js').register(mt);
-		require('../manager/manager.js').register(mt);
+		// require('../manager/manager.js').register(mt);
 		// require('../localNetwork/API.js').register(mt);
+
+		// Init App
+		this.init();
 
 		// Common API
 		mt.app['common'] = require("../common/API.js");
@@ -43,11 +48,47 @@ var apps = {
 
 	},
 
-	test: function(req) {
-		let ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
-		if (ip == '::1')
-			return true;
-		return false;
+	init: function() {
+
+		// API
+		mt.core.app.post("/test", this.api_test);
+		mt.core.app.post("/init", this.api_init);
+
+		// console.log('app Init')
+	},
+
+	// API
+	api_init: function(req, res) {
+		try {
+
+			// Process body
+			let name = req.body?.app || '';
+
+			// Validate
+			if (name.length == 0)
+				throw { error: true, msg: 'Không tìm thấy tên App' };
+
+			// Register app
+			if (mt.app[name] == undefined) {
+				mt.app[name] = require(`../${name}.js`);
+				mt.app[name].init(mt);
+
+				// Response
+				res.status(200).json({ err: false, msg: "App init" });
+			}
+			else {
+
+				// Response
+				res.status(201).json({ err: false, msg: "App already" });
+			}
+		}
+		catch (e) {
+			res.status(300).json({ err: true, dtl: e });
+		}
+	},
+
+	api_test: function(req, res) {
+		res.status(200).send("Test done");
 	},
 
 };

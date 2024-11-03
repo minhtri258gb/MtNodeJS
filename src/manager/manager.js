@@ -1,97 +1,73 @@
 var mt = null;
 var manager = {
+
+	h_debug: true,
 	
-	database: require('./database'),
+	m_db: require('./database'),
 
-	register: function(_mt) {
-		mt = _mt;
-		mt.core.app.get("/manager", function(req, res) {
-			if (!mt.util.authorize(req)) {
-				res.status(403).send("Access denied");
-				return;
-			}
+	// register: function(_mt) {
+	// 	mt = _mt;
+	// 	mt.core.app.get("/manager", function(req, res) {
+	// 		if (!mt.util.authorize(req)) {
+	// 			res.status(403).send("Access denied");
+	// 			return;
+	// 		}
 			
-			if (mt.app.manager == undefined) {
-				mt.app.manager = manager;
-				manager.init();
-			}
-			res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+"/manager/manager.html"));
-		});
-	},
+	// 		if (mt.app.manager == undefined) {
+	// 			mt.app.manager = manager;
+	// 			manager.init();
+	// 		}
+	// 		res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+"/manager/index.html"));
+	// 	});
+	// },
 
-	init: function() {
+	init: function(_mt) {
+		mt = _mt;
+		try {
 
-		// Database
-		this.database.init(mt);
-		
-		// API
-		mt.core.app.get("/manager/anime", this.anime.getPage);
-		mt.core.app.get("/manager/film", this.film.getPage);
-		mt.core.app.get("/manager/movie", this.movie.getPage);
-		mt.core.app.get("/manager/manga", this.manga.getPage);
-		mt.core.app.get("/manager/game", this.game.getPage);
-		mt.core.app.get("/manager/account", this.account.getPage);
-	},
+			// Database
+			this.m_db.init(mt);
 
-	anime: {
-		action: false,
-		getPage: function(req, res) {
-			if (!mt.app.manager.anime.action) {
-				mt.app.manager.anime.action = true;
-				mt.app.manager.anime.init();
-			}
-			res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+"/manager/anime.html"));
-		},
-		init: function() {
+			// API
+			mt.core.app.post("/manager/init", this.api_init);
 
-			// Register API
-			mt.core.app.post("/manager/anime/search", this.search);
-			mt.core.app.post("/manager/anime/save", this.save);
-		},
-		search: function(req, res) {
-
-			// Authorize
-			if (!mt.util.authorize(req)) {
-				res.status(403).send("Access denied");
-				return;
-			}
-
-			// Filter
-			let filter = {};
-			if (req.body) {
-				filter = {
-					page: req.body.page || null,
-					rows: req.body.rows || null,
-					sort: req.body.sort || null,
-					order: req.body.order || null,
-					text: req.body.text || null
-				};
-			}
-
-			// Query
-			res.json(manager.database.anime.search(filter));
-		},
-		save: function(req, res) {
-			if (!mt.util.authorize(req)) {
-				res.status(403).send("Access denied");
-				return;
-			}
-
-			let data = req.body.data;
-			let d = new Date();
-			data.updateTime = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
-
-			manager.database.connect();
-			if (data.id == 0)
-				manager.database.insert("anime", data);
-			else
-				manager.database.update("anime", data);
-			manager.database.disconnect();
-
-			res.end("Success");
+			// Log
+			if (this.h_debug)
+				console.log('[manager/manager] init - Done');
+		}
+		catch (e) {
+			console.error('[manager/manager] init', e); // Log
 		}
 	},
-	
+	api_init: function(req, res) {
+		try {
+
+			// Process body
+			let name = req.body?.app || '';
+
+			// Validate
+			if (name.length == 0)
+				throw { error: true, msg: 'Không tìm thấy tên App' };
+
+			// Register app
+			if (manager[name] == undefined) {
+				manager[name] = require(`./${name}.js`);
+				manager[name].init(mt, manager.m_db);
+
+				// Response
+				res.status(200).json({ err: false, msg: "App init" });
+			}
+			else {
+
+				// Response
+				res.status(201).json({ err: false, msg: "App already" });
+			}
+		}
+		catch (e) {
+			res.status(300).json({ err: true, dtl: e });
+		}
+	},
+
 	film: {
 		action: false,
 		getPage: function(req, res) {
@@ -136,66 +112,7 @@ var manager = {
 			// Register API
 		},
 	},
-	
-	game: {
-		action: false,
-		getPage: function(req, res) {
-			if (!mt.app.manager.game.action) {
-				mt.app.manager.game.action = true;
-				mt.app.manager.game.init();
-			}
-			res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+"/manager/game.html"));
-		},
-		init: function() {
 
-			// Register API
-			mt.core.app.post("/manager/game/search", this.search);
-			mt.core.app.post("/manager/game/save", this.save);
-		},
-		search: function(req, res) {
-
-			// Authorize
-			if (!mt.util.authorize(req)) {
-				res.status(403).send("Access denied");
-				return;
-			}
-
-			// Filter
-			let filter = {};
-			if (req.body) {
-				filter = {
-					page: req.body.page || null,
-					rows: req.body.rows || null,
-					sort: req.body.sort || null,
-					order: req.body.order || null,
-					text: req.body.text || null
-				};
-			}
-
-			// Query
-			res.json(manager.database.game.search(filter));
-		},
-		save: function(req, res) {
-			if (!mt.util.authorize(req)) {
-				res.status(403).send("Access denied");
-				return;
-			}
-
-			let data = req.body.data;
-			let d = new Date();
-			data.updateTime = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
-
-			manager.database.connect();
-			if (data.id == 0)
-				manager.database.insert("game", data);
-			else
-				manager.database.update("game", data);
-			manager.database.disconnect();
-
-			res.end("Success");
-		}
-	},
-	
 	account: {
 		action: false,
 		getPage: function(req, res) {
@@ -232,14 +149,14 @@ var manager = {
 			}
 
 			// Query
-			res.json(manager.database.account.search(filter));
+			res.json(manager.m_db.account.search(filter));
 		},
 		save: function(req, res) {
 			if (!mt.util.authorize(req)) {
 				res.status(403).send("Access denied");
 				return;
 			}
-			manager.database.account.save(req.body.data);
+			manager.m_db.account.save(req.body.data);
 			res.end("Success");
 		}
 	},
