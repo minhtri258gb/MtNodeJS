@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/minhtri258gb/MtServer.git'
+                git 'https://github.com/minhtri258gb/MtNodeJS.git'
             }
         }
         stage('Build') {

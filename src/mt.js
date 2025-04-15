@@ -4,7 +4,7 @@ var mt = {
 
 	lib: {
 		register: function(name, lib) {
-			if (this[name] == undefined)
+			if (this[name] == null)
 				this[name] = require(lib);
 		}
 	},
@@ -12,7 +12,7 @@ var mt = {
 	app: require('./core/apps'),
 	core: {
 		register: function(name, core) {
-			if (this[name] == undefined) {
+			if (this[name] == null) {
 				this[name] = require(core);
 				this[name].init(mt);
 			}

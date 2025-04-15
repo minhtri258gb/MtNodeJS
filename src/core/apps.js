@@ -23,7 +23,7 @@ var apps = {
 
 			mt.core.app.get("/"+name, (req, res) => {
 
-				if (mt.app[name] == undefined) {
+				if (mt.app[name] == null) {
 					mt.app[name] = require("../"+name+"/API.js");
 					mt.app[name].init(mt);
 				}
