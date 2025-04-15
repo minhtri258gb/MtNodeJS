@@ -23,8 +23,9 @@
 // 	mt.lib.fs.unlinkSync(tempfile); //delete temp file
 // }
 
-let mtTools = function(toogle) {
-	require('child_process').spawnSync('./tools/HiddenConsole/hidden.exe', [toogle ? 1 : 0], {stdio: 'inherit'});
-}
+import * as process from 'child_process';
 
-module.exports = mtTools;
+let hiddenConsole = function(toogle) {
+	process.spawnSync('./tools/HiddenConsole/hidden.exe', [toogle ? 1 : 0], {stdio: 'inherit'});
+}
+export default hiddenConsole;

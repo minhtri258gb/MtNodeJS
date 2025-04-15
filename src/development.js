@@ -1,8 +1,9 @@
+import mt from './mt.js';
 
 try {
-	let mt = require('./mt');
 	mt.config.debug = true;
 	mt.init();
-} catch (e) {
+}
+catch (e) {
 	console.log(e);
 }

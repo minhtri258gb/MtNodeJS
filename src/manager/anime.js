@@ -1,12 +1,11 @@
-var mt = null;
+
 var anime = {
 
 	h_debug: true,
 	
 	m_db: null,
 
-	init: function(_mt, _db) {
-		mt = _mt;
+	init: function(_db) {
 		this.m_db = _db;
 		try {
 

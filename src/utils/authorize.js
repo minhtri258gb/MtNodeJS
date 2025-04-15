@@ -1,4 +1,4 @@
-module.exports = function(req) {
+var MtAuthorize = function(req) {
 	// let ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
 	// return (ip == '::1');
 
@@ -16,3 +16,4 @@ module.exports = function(req) {
 
 	return true;
 };
+export default MtAuthorize;

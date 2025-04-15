@@ -1,11 +1,8 @@
-var mt = null;
-var app = {
+import formidable from 'formidable';
 
-	init: function(_mt) {
-		mt = _mt;
-		
-		// Library
-		mt.lib.register('formidable', 'formidable');
+var mtImage = {
+
+	register: function() {
 
 		// API
 		// mt.core.app.put("/image/upload", function(req, res) {
@@ -25,7 +22,7 @@ var app = {
 		// 		console.log(file);
 		// 		file.path = mt.lib.path.join(__dirname, "../res/uploads/", file.name);
 		// 	});
-			
+
 		// 	form.on('file', function(name, file) {
 		// 		filename = file.name;
 		// 	});
@@ -45,5 +42,4 @@ var app = {
 
 	}
 }
-
-module.exports = app;
+export default mtImage;

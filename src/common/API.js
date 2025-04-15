@@ -1,16 +1,13 @@
-var mt = null;
-var common = {
+import os from 'os';
 
-	init: function(_mt) {
-		mt = _mt;
+var mtCommon = {
 
-		// Library
-		mt.lib.register('os', 'os');
-		
+	register: function() {
+
 		// API
 		mt.core.app.post("/authorize", this.api_authorize);
 		mt.core.app.get("/common/getIPLocal", this.api_getIPLocal);
-		
+
 	},
 
 	api_authorize: function(req, res) {
@@ -18,7 +15,7 @@ var common = {
 	},
 
 	api_getIPLocal: function(req, res) {
-		let nets = mt.lib.os.networkInterfaces();
+		let nets = os.networkInterfaces();
 		let wifi = nets['Wi-Fi'];
 		if (wifi) {
 			for (let net of wifi) {
@@ -31,7 +28,6 @@ var common = {
 		}
 		res.status(300).send("IP not found");
 	}
-	
-};
 
-module.exports = common;
+};
+export default mtCommon;

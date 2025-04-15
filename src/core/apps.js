@@ -1,41 +1,65 @@
-var mt = null;
-var apps = {
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import listEndpoints from 'express-list-endpoints';
 
-	register: function(_mt) {
-		mt = _mt;
+import mtCommon from '../common/API.js';
 
-		let listApp = [
-			"test",
-			"piano",
-			"music",
-			"engine",
-			"image",
-			"midi",
-			"calendar",
-			"QR",
-			"OCR",
-			"request",
-			"contact",
-			"api",
-		];
+var mtApps = {
 
-		let register = (name) => {
+	register: async function() {
 
-			mt.core.app.get("/"+name, (req, res) => {
+		const __filename = fileURLToPath(import.meta.url);
+		const __dirname = path.dirname(__filename);
+		const rootPath = path.dirname(__dirname);
 
-				if (mt.app[name] == null) {
-					mt.app[name] = require("../"+name+"/API.js");
-					mt.app[name].init(mt);
+		// Khai báo hàm đăng ký
+		let register = async (name) => {
+
+			// mt.core.app.get("/"+name+'/init', (req, res) => {
+
+				const apiPath = path.join(rootPath, name, 'API.js');
+
+
+				// Kiểm tra file API.js tồn tại
+				try {
+					await fs.access(apiPath);
+				}
+				catch (e) {
+					return; // Nếu ko có API thì ko đăng ký
 				}
 
-				res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+name+"/"+"index.html"));
-			});
+				// Load động module với import()
+				const addon = await import(`file://${apiPath}`);
+
+				// Gọi register() từ module (hoặc export default nếu cần)
+				if (addon.register) {
+					mt.app[name] = addon;
+					addon.register();
+				}
+				else if (addon.default?.register) {
+					mt.app[name] = addon;
+					addon.default.register();
+				}
+				else
+					console.warn(`[ERROR] Addon tại ${apiPath} không có hàm register`);
+
+				// res.json(true);
+				//res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+name+"/"+"index.html"));
+			// });
 		}
 
-		for (let i in listApp)
-			register(listApp[i]);
+		const folders = await fs.readdir(rootPath, { withFileTypes: true });
+		for (const folder of folders) {
 
-		require('../3D/engine.js').register(mt);
+			// Chỉ xử lý nếu là thư mục
+			if (folder.isDirectory() == false)
+				continue;
+
+			register(folder.name);
+		}
+
+		// require('../3D/engine.js').register(mt);
 		// require('../manager/manager.js').register(mt);
 		// require('../localNetwork/API.js').register(mt);
 
@@ -43,16 +67,21 @@ var apps = {
 		this.init();
 
 		// Common API
-		mt.app['common'] = require("../common/API.js");
-		mt.app['common'].init(mt);
+		mt.app['common'] = mtCommon;
+		mtCommon.register();
 
 	},
 
 	init: function() {
 
 		// API
-		mt.core.app.post("/test", this.api_test);
-		mt.core.app.post("/init", this.api_init);
+		mt.core.app.post('/test', this.api_test);
+		mt.core.app.post('/init', this.api_init);
+
+		// List API
+		mt.core.app.get('/endpoints', (req, res) => {
+			res.json(listEndpoints(mt.core.app));
+		});
 
 		// console.log('app Init')
 	},
@@ -92,5 +121,4 @@ var apps = {
 	},
 
 };
-
-module.exports = apps;
+export default mtApps;

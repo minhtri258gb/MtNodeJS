@@ -1,4 +1,4 @@
-var mt = null;
+
 var manager = {
 
 	h_debug: true,
@@ -21,8 +21,7 @@ var manager = {
 	// 	});
 	// },
 
-	init: function(_mt) {
-		mt = _mt;
+	register: function() {
 		try {
 
 			// Database
@@ -52,7 +51,7 @@ var manager = {
 			// Register app
 			if (manager[name] == undefined) {
 				manager[name] = require(`./${name}.js`);
-				manager[name].init(mt, manager.m_db);
+				manager[name].init(manager.m_db);
 
 				// Response
 				res.status(200).json({ err: false, msg: "App init" });

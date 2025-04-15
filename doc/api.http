@@ -1,0 +1,5 @@
+@host = "http://localhost:258"
+
+
+### @name music_init
+GET {{host}}/music/init

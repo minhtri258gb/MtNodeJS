@@ -2,11 +2,18 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "npm",
-			"script": "start",
-			"problemMatcher": [],
-			"label": "npm: start",
-			"detail": "nodemon src/development"
+			"label": "Start DEV",
+			"type": "shell",
+			"command": "npx nodemon src/development",
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Start REL",
+			"type": "shell",
+			"command": "node src/production",
 		}
 	]
 }

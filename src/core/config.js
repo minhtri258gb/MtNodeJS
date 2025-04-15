@@ -1,7 +1,6 @@
-module.exports = {
-
-	debug: false,
-
-	client_path: "../MtClient/"
-
+var MtConfig = {
+  debug: true,
+  port: 258,
+  client_path: "../MtClient/"
 }
+export default MtConfig;

@@ -1,19 +1,15 @@
-var mt = null;
-var app = {
+import path from 'path';
 
-	register: function(_mt) {
-		mt = _mt;
-		mt.core.app.get("/soundHandler", function(req, res) {
+var mtSoundHandler = {
+
+	register: function() {
+		mt.core.app.get('/soundHandler', function(req, res) {
 			if (mt.app.imageHandler == undefined) {
 				mt.app.imageHandler = app;
 				app.init();
 			}
-			res.sendFile(mt.lib.path.join(__dirname, '../../client', '/soundHandler/gui.html'));
+			res.sendFile(path.join(__dirname, '../../client', '/soundHandler/gui.html'));
 		});
-	},
-
-	init: function() {
-
 	},
 
 	example: function() {
@@ -26,6 +22,5 @@ var app = {
 			end: 70 
 		});
 	}
-}
-
-module.exports = app;
+};
+export default mtSoundHandler;

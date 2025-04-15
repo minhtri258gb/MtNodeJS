@@ -1,8 +1,7 @@
-var mt = null;
+
 var database = {
 
-	init: function(_mt) {
-		mt = _mt;
+	init: function() {
 		mt.lib.register('sqlite', 'sqlite-sync');
 	},
 

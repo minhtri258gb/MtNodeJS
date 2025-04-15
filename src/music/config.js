@@ -1,5 +1,6 @@
-module.exports = {
+let mtMusicConfig = {
 	name: 'music',
 	fileData: './server/music/data.json',
-	dirMusic: 'D:/Musics/'
+	dirMusic: 'C:/Massan/Musics/'
 }
+export default mtMusicConfig;

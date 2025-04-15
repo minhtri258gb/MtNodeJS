@@ -1,8 +1,7 @@
-var mt = null;
+
 var engine = {
 
-	register: function(_mt) {
-		mt = _mt;
+	register: function() {
 		
 		mt.core.app.get("/3D", function(req, res) {
 			// require('./changeMusic')();

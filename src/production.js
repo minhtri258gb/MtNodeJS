@@ -2,6 +2,7 @@
 try {
 	let mt = require('./mt');
 	mt.init();
-} catch (e) {
+}
+catch (e) {
 	console.log(e);
 }

@@ -1,84 +1,90 @@
+
+import express from 'express';
+import path from 'path';
+import http from 'http';
+// import * as socket from 'socket.io';
+// import fs from 'fs';
+// import bodyParser from 'body-parser';
+import cors from 'cors';
+
+import MtConfig from './core/config.js';
+import MtApps from './core/apps.js';
+import MtAuthorize from './utils/authorize.js';
+import hiddenConsole from './core/util/hiddenConsole.js';
+
 var mt = {
 
-	config: require('./core/config'),
+	config: MtConfig,
 
-	lib: {
-		register: function(name, lib) {
-			if (this[name] == null)
-				this[name] = require(lib);
-		}
-	},
+	// lib: {
+	// 	register: function(name, lib) {
+	// 		if (this[name] == null)
+	// 			this[name] = require(lib);
+	// 	}
+	// },
 
-	app: require('./core/apps'),
+	app: MtApps,
 	core: {
-		register: function(name, core) {
-			if (this[name] == null) {
-				this[name] = require(core);
-				this[name].init(mt);
-			}
-		}
+		// register: function(name, core) {
+		// 	if (this[name] == null) {
+		// 		this[name] = require(core);
+		// 		this[name].init(mt);
+		// 	}
+		// }
 	},
 
 	util: {
-		authorize: require('./utils/authorize')
+		authorize: MtAuthorize,
+		hiddenConsole: hiddenConsole,
 	},
 
 	init: function() {
 
-		// Lib
-		this.lib.register('express', 'express');
-		this.lib.register('path', 'path');
-		this.lib.register('http', 'http');
-		this.lib.register('socket', 'socket.io');
-		this.lib.register('fs', 'fs');
-		// this.lib.register('bodyParser', 'body-parser');
-		this.lib.register('cors', 'cors');
+		// Gán toàn cục
+		globalThis.mt = this;
 
 		// Hidden console
-		if (!mt.config.debug) {
-			this.util.hiddenConsole = require('./core/util/hiddenConsole');
+		if (!mt.config.debug)
 			this.util.hiddenConsole(true);
-		}
 
 		// Core
-		this.core.app = this.lib.express();
+		this.core.app = express();
 
 		// Register default
-		this.core.app.use(this.lib.cors());
-		this.core.app.use("/", this.lib.express.static(this.config.client_path)); // Static
+		this.core.app.use(cors());
+		this.core.app.use("/", express.static(this.config.client_path)); // Static
 		this.core.app.get("/", (req, res) => { // Home
-			res.sendFile(this.lib.path.join(__dirname, '../', this.config.client_path, '/home/index.html'));
+			res.sendFile(path.join(__dirname, '../', this.config.client_path, '/home/index.html'));
 		});
-		this.core.app.use(this.lib.express.json());
+		this.core.app.use(express.json());
 		// this.core.app.use(mt.lib.bodyParser.json()); // to support JSON-encoded bodies
 		// this.core.app.use(mt.lib.bodyParser.urlencoded({ // to support URL-encoded bodies
 		// 	extended: true
 		// }));
 
 		// App
-		this.app.register(this);
+		this.app.register();
 
 		// Server
-		this.core.server = this.lib.http.createServer(this.core.app);
-		this.core.server.listen(8080);
-		
+		this.core.server = http.createServer(this.core.app);
+		this.core.server.listen(this.config.port);
+
 		// Socket
-		this.core.io = this.lib.socket(this.core.server);
-		this.core.io.on('connection', (socket) => {
-			socket.on('send', function (data) {
-				this.io.sockets.emit('send', data);
-			});
-		});
+		// this.core.io = socket.socket(this.core.server);
+		// this.core.io.on('connection', (socket) => {
+		// 	socket.on('send', function (data) {
+		// 		this.io.sockets.emit('send', data);
+		// 	});
+		// });
 
 		// Tray icon
 		if (!mt.config.debug)
 			this.core.register('tray', './core/tray');
 
 		// Notification
-		console.log("Server online ...");
-		
-	},
-	
-};
+		console.log(`Server online: http://localhost:${this.config.port}`);
 
-module.exports = mt;
+	},
+
+};
+export default mt;
