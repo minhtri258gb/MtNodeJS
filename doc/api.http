@@ -1,5 +1,51 @@
 @host = "http://localhost:258"
 
 
+
+### @name common_getIPLocal
+GET /common/getIPLocal
+Host: localhost:258
+
+
+
+### @name database_query
+POST /database/query
+Host: localhost:258
+Content-Type: application/json
+
+{
+  "database": "music",
+  "sql": "SELECT name FROM music WHERE miss = 0"
+}
+
+
+
+### @name file_list
+GET /file/list?folder=C:\Projects\MtNodeJS
+Host: localhost:258
+
+
+
+### @name file_read
+GET /file/read?file=C:\Projects\MtNodeJS\package.json
+Host: localhost:258
+
+
+
+### @name file_write
+POST /file/write?folder=C:\Users\Windows\Downloads\test\wat
+Host: localhost:258
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="music_202406262017.csv"
+Content-Type: text/csv
+
+< C:\Users\Windows\Downloads\draft\music_202406262017.csv
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+
 ### @name music_init
-GET {{host}}/music/init
+GET /music/init
+Host: localhost:258
