@@ -1,7 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import listEndpoints from 'express-list-endpoints';
 
 import mtCommon from '../common/API.js';
 
@@ -19,7 +18,6 @@ var mtApps = {
 			// mt.core.app.get("/"+name+'/init', (req, res) => {
 
 				const apiPath = path.join(rootPath, name, 'API.js');
-
 
 				// Kiểm tra file API.js tồn tại
 				try {
@@ -66,10 +64,6 @@ var mtApps = {
 		// Init App
 		this.init();
 
-		// Common API
-		mt.app['common'] = mtCommon;
-		mtCommon.register();
-
 	},
 
 	init: function() {
@@ -77,11 +71,6 @@ var mtApps = {
 		// API
 		mt.core.app.post('/test', this.api_test);
 		mt.core.app.post('/init', this.api_init);
-
-		// List API
-		mt.core.app.get('/endpoints', (req, res) => {
-			res.json(listEndpoints(mt.core.app));
-		});
 
 		// console.log('app Init')
 	},

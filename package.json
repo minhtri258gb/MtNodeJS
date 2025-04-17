@@ -14,7 +14,6 @@
 		"busboy": "^1.6.0",
 		"cors": "^2.8.5",
 		"express": "^5.1.0",
-		"express-list-endpoints": "^7.1.1",
 		"formidable": "^3.5.2",
 		"fs": "0.0.1-security",
 		"jimp": "^1.6.0",
