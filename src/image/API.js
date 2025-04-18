@@ -1,11 +1,10 @@
-import formidable from 'formidable';
 
 var mtImage = {
 
 	register: function() {
 
 		// API
-		// mt.core.app.put("/image/upload", function(req, res) {
+		// mt.server.register('PUT', "/image/upload", function(req, res) {
 
 		// 	var form = new mt.lib.formidable.IncomingForm();
 		// 	var index, filename;

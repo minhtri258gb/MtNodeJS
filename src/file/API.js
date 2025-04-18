@@ -5,9 +5,9 @@ import Busboy from 'busboy';
 var mtFile = {
 
 	register: function() {
-		mt.core.app.get('/file/list', (req, res) => this.api_list(req, res));
-		mt.core.app.get('/file/read', (req, res) => this.api_read(req, res));
-		mt.core.app.post('/file/write', (req, res) => this.api_write(req, res));
+		mt.server.register('GET', '/file/list', (req, res) => this.api_list(req, res));
+		mt.server.register('GET', '/file/read', (req, res) => this.api_read(req, res));
+		mt.server.register('POST', '/file/write', (req, res) => this.api_write(req, res));
 	},
 
 	api_list: function(req, res) {

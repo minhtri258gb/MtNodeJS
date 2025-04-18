@@ -1,2 +1,3 @@
 @echo off
-start "" node server/production
+cd ..
+start "MT NodeJS" node src/main

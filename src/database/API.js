@@ -3,7 +3,7 @@ import sqlite from 'sqlite-sync';
 var mtDatabase = {
 
 	register: function() {
-		mt.core.app.post('/database/query', (req, res) => this.api_query(req, res));
+		mt.server.register('POST', '/database/query', (req, res) => this.api_query(req, res));
 	},
 
 	api_query: function(req, res) {

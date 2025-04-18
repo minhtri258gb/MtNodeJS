@@ -1,59 +1,54 @@
-var mt = null;
-var tray = {
-	
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+import path from 'path';
+import systray from 'systray';
+import { exec } from 'child_process';
+
+var mtTray = {
+
+	c_systray: null, // library systray
+
 	menus: [],
 
-	init: function(_mt) {
-		mt = _mt;
+	init: function() {
 
 		// Library
-		const SysTray = require('systray').default;
-		mt.lib.register('open', 'open');
+		// const SysTray = require('systray').default;
+		// mt.lib.register('open', 'open');
 
 		this.initMenu();
 
 		// Init Tray icon
-		mt.lib.systray = new SysTray({
+		const SysTray = systray.default;
+		this.c_systray = new SysTray({
 			menu: {
-				icon: tray.loadIcon(),
+				icon: this.loadIcon(),
 				title: "MT Server",
 				tooltip: "MT Server online ...",
-				items: tray.menus
+				items: this.menus
 			},
 			debug: false,
 			copyDir: false,
 		})
-		
+
 		// Register onClick item
-		mt.lib.systray.onClick(action => {
-			tray.menus[action.seq_id].onClick(action);
+		this.c_systray.onClick(action => {
+			this.menus[action.seq_id].onClick(action);
 		})
 	},
 
 	initMenu: function() {
-
-		this.addMenuItem("Music", "Open music", false, true, function(action) {
-			mt.lib.open("http://localhost/music");
-		});
-
-		this.addMenuItem("Manager", "Open manager", false, true, function(action) {
-			mt.lib.open("http://localhost/manager");
-		});
-
-		this.addMenuItem("Console", "Show console", false, true, function(action) {
-			tray.toogleCheck(action);
-			mt.util.hiddenConsole(action.item.checked);
-		});
-
-		this.addMenuItem("Shutdow", "Shutdown server", false, true, function(action) {
-			mt.lib.systray.kill();
-		});
-		
+		this.addMenuItem("Music", "Open music", false, true, () => this.actionOpenURL('music'));
+		this.addMenuItem("Manager", "Open manager", false, true, () => this.actionOpenURL('manager'));
+		this.addMenuItem("Console", "Show console", false, true, (action) => this.actionToogleConsole(action));
+		this.addMenuItem("Shutdow", "Shutdown server", false, true, () => this.actionShutdown());
 	},
 
 	loadIcon: function() {
-		let filepath = mt.lib.path.join(__dirname, '../../res', 'logo.ico');
-		data = mt.lib.fs.readFileSync(filepath);
+		const __filename = fileURLToPath(import.meta.url);
+		const __dirname = path.dirname(__filename);
+		let filepath = path.resolve(__dirname, '../../res/logo.ico');
+		let data = fs.readFileSync(filepath);
 		return data.toString('base64');
 	},
 
@@ -69,7 +64,7 @@ var tray = {
 	},
 
 	toogleCheck: function(action) {
-		mt.lib.systray.sendAction({
+		this.c_systray.sendAction({
 			type: 'update-item',
 			item: {
 			...action.item,
@@ -77,7 +72,25 @@ var tray = {
 			},
 			seq_id: action.seq_id,
 		})
-	}
-};
+	},
 
-module.exports = tray;
+	// Action
+	actionOpenURL: function(url) {
+		let host = 'http://localhost:'+mt.config.port;
+		exec(`start chrome ${host}/${url}`, (err, stdout, stderr) => {
+			if (err)
+				console.error('Lỗi khi mở Chrome:', err);
+		});
+	},
+	actionToogleConsole: function(action) {
+		this.toogleCheck(action);
+		mt.util.hiddenConsole(action.item.checked);
+	},
+	actionShutdown: function() {
+		console.log('[INFO] Server Shutdown.');
+		this.c_systray.kill();
+		process.exit(0); // Đóng máy chủ
+	},
+
+};
+export default mtTray;

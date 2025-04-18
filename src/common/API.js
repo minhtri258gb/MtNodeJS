@@ -5,8 +5,8 @@ var mtCommon = {
 	register: function() {
 
 		// API
-		mt.core.app.post('/authorize', this.api_authorize);
-		mt.core.app.get('/common/getIPLocal', this.api_getIPLocal);
+		mt.server.register('POST', '/authorize', this.api_authorize);
+		mt.server.register('GET', '/common/getIPLocal', this.api_getIPLocal);
 
 	},
 

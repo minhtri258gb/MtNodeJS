@@ -10,8 +10,8 @@ var anime = {
 		try {
 
 			// API
-			mt.core.app.get("/manager/anime/grid", this.api_search);
-			mt.core.app.post("/manager/anime/grid", this.api_action);
+			mt.server.register('GET', "/manager/anime/grid", this.api_search);
+			mt.server.register('POST', "/manager/anime/grid", this.api_action);
 
 			// Log
 			if (this.h_debug)

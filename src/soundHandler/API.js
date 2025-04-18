@@ -3,7 +3,7 @@ import path from 'path';
 var mtSoundHandler = {
 
 	register: function() {
-		mt.core.app.get('/soundHandler', function(req, res) {
+		mt.server.register('GET', '/soundHandler', function(req, res) {
 			if (mt.app.imageHandler == undefined) {
 				mt.app.imageHandler = app;
 				app.init();

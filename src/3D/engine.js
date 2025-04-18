@@ -2,8 +2,8 @@
 var engine = {
 
 	register: function() {
-		
-		mt.core.app.get("/3D", function(req, res) {
+
+		mt.server.register('GET', '/3D', function(req, res) {
 			// require('./changeMusic')();
 			res.sendFile(mt.lib.path.join(__dirname + '/../../client', '3D/html/engine.html'));
 		});

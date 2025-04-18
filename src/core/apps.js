@@ -2,8 +2,6 @@ import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import mtCommon from '../common/API.js';
-
 var mtApps = {
 
 	register: async function() {
@@ -15,7 +13,7 @@ var mtApps = {
 		// Khai báo hàm đăng ký
 		let register = async (name) => {
 
-			// mt.core.app.get("/"+name+'/init', (req, res) => {
+			// mt.server.register('GET', "/"+name+'/init', (req, res) => {
 
 				const apiPath = path.join(rootPath, name, 'API.js');
 
@@ -69,8 +67,8 @@ var mtApps = {
 	init: function() {
 
 		// API
-		mt.core.app.post('/test', this.api_test);
-		mt.core.app.post('/init', this.api_init);
+		mt.server.register('POST', '/test', this.api_test);
+		mt.server.register('POST', '/init', this.api_init);
 
 		// console.log('app Init')
 	},

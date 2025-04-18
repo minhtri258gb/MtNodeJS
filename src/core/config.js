@@ -1,6 +1,6 @@
-var MtConfig = {
-  debug: true,
-  port: 258,
-  client_path: "../MtClient/"
+var mtConfig = {
+  debug: false,
+  port: 958,
+  clientPath: "../MtClient/"
 }
-export default MtConfig;
+export default mtConfig;

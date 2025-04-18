@@ -2,7 +2,8 @@
 	"configurations": [
 		{
 			"name": "Debug",
-			"program": "${workspaceFolder}/src/development.js",
+			"program": "${workspaceFolder}/src/main.js",
+			"args": ["-debug"],
 			"request": "launch",
 			"skipFiles": [
 				"<node_internals>/**"

@@ -21,13 +21,13 @@ var mtMusic = {
 		// require('./admin').register(mt);
 
 		// API
-		mt.core.app.post('/music/getListMusic', (req, res) => this.api_getListMusic(req, res));
-		mt.core.app.get('/music/getMusic', (req, res) => this.api_getMusic(req, res));
-		mt.core.app.post('/music/refresh', (req, res) => this.api_refresh(req, res));
-		mt.core.app.post('/music/add', (req, res) => this.api_add(req, res));
-		mt.core.app.post('/music/edit', (req, res) => this.api_edit(req, res));
-		mt.core.app.delete('/music/remove', (req, res) => this.api_remove(req, res));
-		mt.core.app.post('/music/cut', (req, res) => this.api_cut(req, res));
+		mt.server.register('POST', '/music/getListMusic', (req, res) => this.api_getListMusic(req, res));
+		mt.server.register('GET', '/music/getMusic', (req, res) => this.api_getMusic(req, res));
+		mt.server.register('POST', '/music/refresh', (req, res) => this.api_refresh(req, res));
+		mt.server.register('POST', '/music/add', (req, res) => this.api_add(req, res));
+		mt.server.register('POST', '/music/edit', (req, res) => this.api_edit(req, res));
+		mt.server.register('DELETE', '/music/remove', (req, res) => this.api_remove(req, res));
+		mt.server.register('POST', '/music/cut', (req, res) => this.api_cut(req, res));
 	},
 
 	getListMusic: function() {
@@ -237,10 +237,9 @@ var mtMusic = {
 
 		// Add to DB
 		try {
-
 			music.database.insertTrack(id);
-
-		} catch (e) {
+		}
+		catch (e) {
 			res.status(300).send("Error: "+e);
 			return;
 		}

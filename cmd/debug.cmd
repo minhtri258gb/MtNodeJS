@@ -1,2 +1,3 @@
 @echo off
-nodemon server/development
+cd ..
+npx nodemon src/main -debug

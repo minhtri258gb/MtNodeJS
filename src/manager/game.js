@@ -10,8 +10,8 @@ var game = {
 		try {
 
 			// API
-			mt.core.app.get("/manager/game/grid", this.api_search);
-			mt.core.app.post("/manager/game/grid", this.api_action);
+			mt.server.register('GET', "/manager/game/grid", this.api_search);
+			mt.server.register('POST', "/manager/game/grid", this.api_action);
 		}
 		catch (e) {
 			console.error('[manager/game] init', e); // Log

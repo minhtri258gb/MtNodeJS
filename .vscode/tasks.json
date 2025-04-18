@@ -4,7 +4,7 @@
 		{
 			"label": "Start DEV",
 			"type": "shell",
-			"command": "npx nodemon src/development",
+			"command": "npx nodemon src/main -debug",
 			"group": {
 				"kind": "test",
 				"isDefault": true
@@ -13,7 +13,7 @@
 		{
 			"label": "Start REL",
 			"type": "shell",
-			"command": "node src/production",
+			"command": "node src/main",
 		}
 	]
 }

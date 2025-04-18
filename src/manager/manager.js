@@ -7,7 +7,7 @@ var manager = {
 
 	// register: function(_mt) {
 	// 	mt = _mt;
-	// 	mt.core.app.get("/manager", function(req, res) {
+	// 	mt.server.register('GET', "/manager", function(req, res) {
 	// 		if (!mt.util.authorize(req)) {
 	// 			res.status(403).send("Access denied");
 	// 			return;
@@ -28,7 +28,7 @@ var manager = {
 			this.m_db.init(mt);
 
 			// API
-			mt.core.app.post("/manager/init", this.api_init);
+			mt.server.register('POST', "/manager/init", this.api_init);
 
 			// Log
 			if (this.h_debug)
@@ -124,8 +124,8 @@ var manager = {
 		init: function() {
 
 			// Register API
-			mt.core.app.post("/manager/account/search", this.search);
-			mt.core.app.post("/manager/account/save", this.save);
+			mt.server.register('POST', "/manager/account/search", this.search);
+			mt.server.register('POST', "/manager/account/save", this.save);
 		},
 		search: function(req, res) {
 
