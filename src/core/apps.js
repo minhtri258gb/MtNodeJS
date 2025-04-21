@@ -59,16 +59,9 @@ var mtApps = {
 		// require('../manager/manager.js').register(mt);
 		// require('../localNetwork/API.js').register(mt);
 
-		// Init App
-		this.init();
-
-	},
-
-	init: function() {
-
 		// API
-		mt.server.register('POST', '/test', this.api_test);
-		mt.server.register('POST', '/init', this.api_init);
+		mt.server.register('POST', '/test', false, this.api_test);
+		mt.server.register('POST', '/init', false, this.api_init);
 
 		// console.log('app Init')
 	},

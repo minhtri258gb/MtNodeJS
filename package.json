@@ -13,8 +13,10 @@
 	"dependencies": {
 		"busboy": "^1.6.0",
 		"cors": "^2.8.5",
+		"dotenv": "^16.5.0",
 		"express": "^5.1.0",
 		"fs": "0.0.1-security",
+		"jsonwebtoken": "^9.0.2",
 		"local-devices": "^3.0.0",
 		"mathjs": "^14.4.0",
 		"mp3-cutter": "^1.0.6",

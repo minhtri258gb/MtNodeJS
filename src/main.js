@@ -2,8 +2,9 @@ import mtConfig from './core/config.js';
 import mtServer from './core/server.js';
 import mtApps from './core/apps.js';
 import mtTray from './core/tray.js';
-import MtAuthorize from './utils/authorize.js';
+import mtAuthen from './core/authen.js';
 import hiddenConsole from './core/util/hiddenConsole.js';
+import * as dotenv from 'dotenv';
 
 var mtMain = {
 
@@ -12,9 +13,9 @@ var mtMain = {
 	app: mtApps,
 	server: mtServer,
 	tray: mtTray,
+	authen: mtAuthen,
 
 	util: {
-		authorize: MtAuthorize,
 		hiddenConsole: hiddenConsole,
 	},
 
@@ -35,6 +36,9 @@ var mtMain = {
 			// Ẩn console
 			if (!this.config.debug)
 				this.util.hiddenConsole(true);
+
+			// Đọc biến môi trường
+			dotenv.config();
 
 			// Server Setup
 			this.server.setup();

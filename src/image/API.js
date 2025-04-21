@@ -4,7 +4,7 @@ var mtImage = {
 	register: function() {
 
 		// API
-		// mt.server.register('PUT', "/image/upload", function(req, res) {
+		// mt.server.register('PUT', "/image/upload", true, function(req, res) {
 
 		// 	var form = new mt.lib.formidable.IncomingForm();
 		// 	var index, filename;

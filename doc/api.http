@@ -2,6 +2,18 @@
 @host2 = "http://localhost:958"
 
 
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6Ii0xMzkzMTUzMzkzIiwiaWF0IjoxNzQ1MTMyNTc1LCJleHAiOjE3NDUxNDY5NzV9.l-9AtXL5ysYJnI7Z3pNbpmWAjc1QKedog7yi7xS0rIQ
+
+### @name Authentication
+POST /authorize
+Host: localhost:958
+Content-Type: application/json
+
+{
+  "password": "-1393153393"
+}
+
+
 
 ### @name common_getIPLocal
 GET /common/getIPLocal
@@ -11,7 +23,8 @@ Host: localhost:258
 
 ### @name database_query
 POST /database/query
-Host: localhost:258
+Host: localhost:958
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {

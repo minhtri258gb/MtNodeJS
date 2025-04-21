@@ -3,7 +3,7 @@ var engine = {
 
 	register: function() {
 
-		mt.server.register('GET', '/3D', function(req, res) {
+		mt.server.register('GET', '/3D', false, function(req, res) {
 			// require('./changeMusic')();
 			res.sendFile(mt.lib.path.join(__dirname + '/../../client', '3D/html/engine.html'));
 		});

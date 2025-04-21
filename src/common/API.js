@@ -5,15 +5,17 @@ var mtCommon = {
 	register: function() {
 
 		// API
-		mt.server.register('POST', '/authorize', this.api_authorize);
-		mt.server.register('GET', '/common/getIPLocal', this.api_getIPLocal);
+		mt.server.register('POST', '/authorize', false, this.api_authorize);
+		mt.server.register('GET', '/common/getIPLocal', false, this.api_getIPLocal);
 
 	},
 
 	api_authorize: function(req, res) {
-		res.end(mt.util.authorize(req) ? "true" : "false");
+		let body = req.body || {};
+		let password = body.password || '';
+		let token = mt.authen.accessToken(password);
+		res.json({ result: token.length > 0, token });
 	},
-
 	api_getIPLocal: function(req, res) {
 		try {
 			let nets = os.networkInterfaces();
@@ -30,6 +32,28 @@ var mtCommon = {
 				}
 			}
 			res.status(300).send("IP not found");
+		}
+		catch (e) {
+			res.status(300).send("[ERROR] "+e);
+		}
+	},
+	api_getConfig: function(req, res) {
+		try {
+
+			// Input
+			let params = req.query || {};
+			let name = params.name || '';
+
+			let result = null;
+			switch (name) {
+				case 'clientPath':
+					result = process.env.CLIENT_PATH;
+					break;
+			}
+			if (result != null)
+				res.json(mt.config);
+			else
+				res.status(300).send("Not found");
 		}
 		catch (e) {
 			res.status(300).send("[ERROR] "+e);

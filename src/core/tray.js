@@ -76,7 +76,7 @@ var mtTray = {
 
 	// Action
 	actionOpenURL: function(url) {
-		let host = 'http://localhost:'+mt.config.port;
+		let host = `http://localhost:${mt.server.port}`;
 		exec(`start chrome ${host}/${url}`, (err, stdout, stderr) => {
 			if (err)
 				console.error('Lỗi khi mở Chrome:', err);

@@ -3,7 +3,7 @@ var admin = {
 
 	register: function(_mt) {
 		mt = _mt;
-		mt.server.register('GET', "/music/admin", admin.view);
+		mt.server.register('GET', "/music/admin", true, admin.view);
 	},
 
 	view: function(req, res) {
@@ -17,8 +17,8 @@ var admin = {
 	init: function() {
 
 		// API
-		mt.server.register('POST', "/music/admin/getListMusic", admin.api_getListMusic);
-		mt.server.register('POST', "/music/admin/save", admin.api_save);
+		mt.server.register('POST', "/music/admin/getListMusic", false, admin.api_getListMusic);
+		mt.server.register('POST', "/music/admin/save", true, admin.api_save);
 
 	},
 
