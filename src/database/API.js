@@ -53,6 +53,7 @@ var mtDatabase = {
 			let size = body.size || -1;
 			let page = body.page || -1;
 			let sort = body.sort || [];
+			let filter = body.filter || [];
 
 			// Validate
 			if (dbName.length == 0) {
@@ -83,7 +84,15 @@ var mtDatabase = {
 
 			// Build Condition
 			let sqlCond = where;
-			// #TODO
+
+			if (filter.length > 0) {
+				for (let field of filter) {
+
+					// {"field": "name", "type": "like", "value": "ishura"}
+					if (field.type == 'like')
+						sqlCond += ` AND ${field.field} LIKE "%${field.value}%"`;
+				}
+			}
 
 			// Build Query
 			let sql = `
