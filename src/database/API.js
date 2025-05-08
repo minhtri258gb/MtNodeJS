@@ -1,3 +1,4 @@
+import e from 'cors';
 import sqlite from 'sqlite-sync';
 
 var mtDatabase = {
@@ -35,7 +36,16 @@ var mtDatabase = {
 			sqlite.close();
 
 			// Return
-			res.json(data);
+			if (data.error) {
+				res.status(500).json({
+					message: data.error.message,
+					sql: sql
+				});
+			}
+			else {
+				res.json(data);
+			}
+
 		}
 		catch (e) {
 			res.status(500).send("[ERROR] "+e);
@@ -120,7 +130,8 @@ var mtDatabase = {
 
 			// Return
 			if (isPaging) {
-				let maxPage = Math.ceil(count[0].total / size);
+				let total = count[0]?.total || 0;
+				let maxPage = Math.ceil(total / size);
 				res.json({ data, last_page: maxPage });
 			}
 			else
