@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
 var mtAuthen = {
@@ -5,7 +6,10 @@ var mtAuthen = {
 
 	accessToken: function(password) {
 
-		const result = (password === '-1393153393');
+		const salt = '-1393153393';
+		const hashPW = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+
+		const result = (hashPW === 'cfc4169ff17813f0413ca274eca9d339f36a5dc372ac2d3f19d177371e10da00ebaa37980a9f399ab04da6ecdf654340cb0a306e205a067763ea55945beb7188');
 
 		this.m_accessToken = '';
 		if (result) {

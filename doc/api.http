@@ -1,52 +1,52 @@
-@host = "http://localhost:258"
-@host2 = "http://localhost:958"
+# @host = "http://localhost:258"
+@host = "http://localhost:958"
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6Ii0xMzkzMTUzMzkzIiwiaWF0IjoxNzU0NjY0ODEyLCJleHAiOjE3NTQ2NzkyMTJ9.YzIPRY-TQU3BIVdfmy_rcUiiGBDLObxgro2QbdWtVGk
 
+###
 
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6Ii0xMzkzMTUzMzkzIiwiaWF0IjoxNzQ1MTMyNTc1LCJleHAiOjE3NDUxNDY5NzV9.l-9AtXL5ysYJnI7Z3pNbpmWAjc1QKedog7yi7xS0rIQ
-
-### @name Authentication
+# @name Authentication
 POST /authorize
 Host: localhost:958
 Content-Type: application/json
 
 {
-  "password": "-1393153393"
+  "password": "euro958"
 }
 
+###
 
-
-### @name common_getIPLocal
+# @name common_getIPLocal
 GET /common/getIPLocal
 Host: localhost:258
 
+###
 
-
-### @name database_query
+# @name database_query
 POST /database/query
 Host: localhost:958
-Authorization: Bearer {{token}}
+Authorization: {{token}}
 Content-Type: application/json
 
 {
-  "database": "music",
-  "sql": "SELECT name FROM music WHERE miss = 0"
+  "database": "calendar",
+  "sql": "SELECT * FROM calendar WHERE 1 = 1"
 }
 
+###
 
-
-### @name file_list
+# @name file_list
 GET /file/list?folder=C:\Projects\MtNodeJS
 Host: localhost:258
 
+###
 
-
-### @name file_read
+# @name file_read
 GET /file/read?file=C:\Projects\MtNodeJS\package.json
 Host: localhost:258
 
+###
 
-
-### @name file_write
+# @name file_write
 POST /file/write?folder=C:\Users\Windows\Downloads\test\wat
 Host: localhost:258
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -58,15 +58,17 @@ Content-Type: text/csv
 < C:\Users\Windows\Downloads\draft\music_202406262017.csv
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
+###
 
-
-### @name music_init
+# @name music_init
 GET /music/init HTTP/1.1
 Host: localhost:258
 
+###
 
-
-### @name music_getListMusic
+# @name music_getListMusic
 POST /music/getListMusic HTTP/1.1
 Host: localhost:958
 Content-Type: application/json
+
+###
