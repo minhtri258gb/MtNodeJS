@@ -19,11 +19,12 @@ var mtMain = {
 		hiddenConsole: hiddenConsole,
 	},
 
-	init: function() {
+	init() {
 		try {
 
-			// Gán biến toàn cục
-			globalThis.mt = this;
+			// Bind Global
+			global.mt = this;
+			// globalThis.mt = this;
 
 			// Xử lý args
 			for (let arg of process.argv) {

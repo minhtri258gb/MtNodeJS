@@ -9,7 +9,7 @@ var mtServer = {
 	c_server: null, // http server
 	m_port: 80,
 
-	setup: function () {
+	setup () {
 
 		// Đọc từ biến môi trường
 		this.m_port = process.env.PORT || 80;
@@ -26,7 +26,7 @@ var mtServer = {
 		this.c_app.use(express.json()); // Dùng body JSON
 	},
 
-	start: function () {
+	start () {
 
 		this.c_server = http.createServer(this.c_app);
 		this.c_server.listen(this.m_port, () => {
@@ -42,7 +42,7 @@ var mtServer = {
 		});
 	},
 
-	register: function(method, url, authen, callback) {
+	register(method, url, authen, callback) {
 		if (method == 'GET') {
 			if (authen)
 				this.c_app.get(url, mt.authen.protected, callback);
@@ -68,5 +68,6 @@ var mtServer = {
 				this.c_app.delete(url, callback);
 		}
 	},
+
 };
 export default mtServer;

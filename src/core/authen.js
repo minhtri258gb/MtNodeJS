@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 var mtAuthen = {
 	m_accessToken: '',
 
-	accessToken: function(password) {
+	accessToken(password) {
 
 		const salt = '-1393153393';
 		const hashPW = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
@@ -21,10 +21,10 @@ var mtAuthen = {
 
 		return this.m_accessToken;
 	},
-	check: function(token) {
+	check(token) {
 		return (token == this.m_accessToken);
 	},
-	protected: function(req, res, next) {
+	protected(req, res, next) {
 
 		// Lấy header Authorization
 		const authHeader = req.headers['authorization'];

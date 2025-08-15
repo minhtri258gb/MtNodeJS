@@ -1,6 +1,7 @@
-module.exports = {
+var mtSocket = {
 	io: null,
-	bind: function (server) {
+
+	bind(server) {
 		this.io = require('socket.io')(server);
 
 		this.io.on('connection', (socket) => {
@@ -11,3 +12,4 @@ module.exports = {
 		});
 	}
 };
+export default mtSocket;

@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 
 var mtApps = {
 
-	register: async function() {
+	async register() {
 
 		const __filename = fileURLToPath(import.meta.url);
 		const __dirname = path.dirname(__filename);
@@ -67,7 +67,7 @@ var mtApps = {
 	},
 
 	// API
-	api_init: function(req, res) {
+	api_init(req, res) {
 		try {
 
 			// Process body
@@ -96,7 +96,7 @@ var mtApps = {
 		}
 	},
 
-	api_test: function(req, res) {
+	api_test(req, res) {
 		res.status(200).send("Test done");
 	},
 

@@ -1,5 +1,5 @@
 var mtConfig = {
-  debug: false,
-  clientPath: "../MtClient/"
+	debug: false,
+	clientPath: "../MtClient/"
 }
 export default mtConfig;

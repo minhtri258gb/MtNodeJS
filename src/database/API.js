@@ -125,8 +125,11 @@ var mtDatabase = {
 			sqlite.close();
 
 			// Check Error
-			if (data.error)
+			if (data.error) {
 				data.error.sql = sql;
+				data.error.database = dbPath;
+				data.error.msg = data.error.message;
+			}
 
 			// Return
 			if (isPaging) {
