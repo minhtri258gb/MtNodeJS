@@ -4,13 +4,16 @@ import { fileURLToPath } from 'url';
 import Busboy from 'busboy';
 
 var mtFile = {
+	m_registerFolder: {}, // Lưu các
 
-	register: function() {
+	register() {
 
 		// General
 		mt.server.register('GET', '/file/list', true, (req, res) => this.api_list(req, res));
 		mt.server.register('GET', '/file/read', true, (req, res) => this.api_read(req, res));
 		mt.server.register('POST', '/file/write', true, (req, res) => this.api_write(req, res));
+		mt.server.register('POST', '/file/register', true, (req, res) => this.api_register(req, res));
+		mt.server.register('GET', '/file/static', false, (req, res) => this.api_static(req, res));
 
 		// System
 		mt.server.register('GET', '/file/getClientPath', true, (req, res) => this.api_getClientPath(req, res));
@@ -19,7 +22,7 @@ var mtFile = {
 		mt.server.register('GET', '/file/jstree', true, (req, res) => this.api_jstree(req, res));
 	},
 
-	api_list: function(req, res) {
+	api_list(req, res) {
 		try {
 
 			// Input
@@ -28,7 +31,7 @@ var mtFile = {
 
 			// Validate
 			if (folder.length == 0) {
-				res.status(400).send("[ERROR] Missing params: folder");
+				res.status(400).send('[mt.file.api_list] Thiếu params "folder"');
 				return;
 			}
 
@@ -52,11 +55,11 @@ var mtFile = {
 			// Return
 			res.json(result);
 		}
-		catch (e) {
-			res.status(500).send("[ERROR] "+e);
+		catch (ex) {
+			res.status(500).send(`[mt.file.api_list] Exception: ${ex}`);
 		}
 	},
-	api_read: function(req, res) {
+	api_read(req, res) {
 		try {
 
 			// Input
@@ -65,18 +68,18 @@ var mtFile = {
 
 			// Validate
 			if (filepath.length == 0) {
-				res.status(400).send("[ERROR] Missing params: file");
+				res.status(400).send('[mt.file.api_read] Thiếu params "file"');
 				return;
 			}
 
 			// Gửi trực tiếp
 			res.sendFile(filepath);
 		}
-		catch (e) {
-			res.status(500).send("[ERROR] "+e);
+		catch (ex) {
+			res.status(500).send(`[mt.file.api_read] Exception: ${ex}`);
 		}
 	},
-	api_write: function(req, res) {
+	api_write(req, res) {
 		try {
 
 			// Input
@@ -85,7 +88,7 @@ var mtFile = {
 
 			// Validate
 			if (folder.length == 0) {
-				res.status(400).send("[ERROR] Missing params: folder");
+				res.status(400).send('[mt.file.api_write] Thiếu params "folder"');
 				return;
 			}
 
@@ -112,11 +115,80 @@ var mtFile = {
 			// Hook pipe
 			req.pipe(busboy);
 		}
-		catch (e) {
-			res.status(500).send("[ERROR] "+e);
+		catch (ex) {
+			res.status(500).send(`[mt.file.api_write] Exception: ${ex}`);
 		}
 	},
-	api_getClientPath: function(req, res) {
+	api_register(req, res) {
+		try {
+
+			// Input
+			let params = req.body || {};
+			let folder = params.folder || '';
+
+			// Validate
+			if (folder.length == 0) {
+				res.status(400).send('[mt.file.api_register] Thiếu params "folder"');
+				return;
+			}
+			if (!fs.existsSync(folder)) {
+				res.status(400).send(`[mt.file.api_register] Không tìm thấy thư mục "${folder}"`);
+				return;
+			}
+
+			// Chuẩn hóa đường dẫn
+			folder = folder.replaceAll('\\', '/'); // Thay \\ thành /
+			if (folder[folder.length-1] == '/') // Bỏ dấu / cuối
+				folder = folder.substr(0, folder.length-1);
+
+			// Lưu thư mục đã phân quyền
+			if (this.m_registerFolder[folder] == undefined)
+				this.m_registerFolder[folder] = true;
+
+			// Response
+			res.status(200).send('Đã đăng ký đường dẫn');
+		}
+		catch (ex) {
+			res.status(500).send(`[mt.file.api_register] Exception: ${ex}`);
+		}
+	},
+	api_static(req, res) {
+		try {
+
+			// Input
+			let params = req.query || {};
+			let filepath = params.file || '';
+			let folderpath = params.folder || '';
+
+			// Validate
+			if (filepath.length == 0) {
+				res.status(400).send('[mt.file.api_static] Thiếu params "file"');
+				return;
+			}
+			if (folderpath.length == 0) {
+				res.status(400).send('[mt.file.api_static] Thiếu params "folder"');
+				return;
+			}
+
+			// Chuẩn hóa đường dẫn
+			filepath = filepath.replaceAll('\\', '/'); // Thay \\ thành /
+			folderpath = folderpath.replaceAll('\\', '/'); // Thay \\ thành /
+			if (folderpath[folderpath.length-1] == '/') // Bỏ dấu / cuối
+				folderpath = folderpath.substr(0, folder.length-1);
+
+			if (this.m_registerFolder[folderpath] !== true) {
+				res.status(400).send(`[mt.file.api_static] Chưa đăng ký thư mục tĩnh "${folderpath}"`);
+				return;
+			}
+
+			// Gửi trực tiếp
+			res.sendFile(folderpath + '/' + filepath);
+		}
+		catch (ex) {
+			res.status(500).send(`[mt.file.api_static] Exception: ${ex}`);
+		}
+	},
+	api_getClientPath(req, res) {
 		try {
 
 			// Thư mục Client
@@ -129,11 +201,11 @@ var mtFile = {
 
 			res.json(clientPath);
 		}
-		catch (e) {
-			res.status(500).send("[ERROR] "+e);
+		catch (ex) {
+			res.status(500).send(`[mt.file.api_getClientPath] Exception: ${ex}`);
 		}
 	},
-	api_jstree: function(req, res) {
+	api_jstree(req, res) {
 		try {
 
 			// Input
@@ -174,8 +246,8 @@ var mtFile = {
 			// Return
 			res.json(result);
 		}
-		catch (e) {
-			res.status(500).send("[ERROR] "+e);
+		catch (ex) {
+			res.status(500).send(`[mt.file.api_jstree] Exception: ${ex}`);
 		}
 	},
 

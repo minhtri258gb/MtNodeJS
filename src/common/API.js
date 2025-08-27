@@ -6,6 +6,7 @@ var mtCommon = {
 
 		// API
 		mt.server.register('POST', '/authorize', false, this.api_authorize);
+		mt.server.register('GET', '/checkToken', true, this.api_checkToken);
 		mt.server.register('GET', '/common/getIPLocal', false, this.api_getIPLocal);
 
 	},
@@ -15,6 +16,9 @@ var mtCommon = {
 		let password = body.password || '';
 		let token = mt.authen.accessToken(password);
 		res.json({ result: token.length > 0, token });
+	},
+	api_checkToken: function(req, res) {
+		res.json({ result: true });
 	},
 	api_getIPLocal: function(req, res) {
 		try {
