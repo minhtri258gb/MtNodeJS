@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
 var mtAuthen = {
+	h_tokenExpireTime: '30d', // 8h
 	m_accessToken: '',
 
 	accessToken(password) {
@@ -15,7 +16,7 @@ var mtAuthen = {
 		if (result) {
 			let payload = { password };
 			this.m_accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-				expiresIn: '4h', // Token hết hạn sau 4 giờ
+				expiresIn: this.h_tokenExpireTime,
 			});
 		}
 
