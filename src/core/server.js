@@ -23,7 +23,8 @@ var mtServer = {
 		this.c_app.get('/', (req, res) => { // Home
 			res.sendFile(path.join(__dirname, '../', mt.config.clientPath, '/home/index.html'));
 		});
-		this.c_app.use(express.json()); // Dùng body JSON
+		this.c_app.use(express.json()); // Dùng body Json
+		this.c_app.use(express.text()); // Dùng body Text
 	},
 
 	start () {

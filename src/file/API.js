@@ -12,6 +12,7 @@ var mtFile = {
 		mt.server.register('GET', '/file/list', true, (req, res) => this.api_list(req, res));
 		mt.server.register('GET', '/file/read', true, (req, res) => this.api_read(req, res));
 		mt.server.register('POST', '/file/write', true, (req, res) => this.api_write(req, res));
+		mt.server.register('POST', '/file/writeText', true, (req, res) => this.api_writeText(req, res));
 		mt.server.register('POST', '/file/register', true, (req, res) => this.api_register(req, res));
 		mt.server.register('GET', '/file/static', false, (req, res) => this.api_static(req, res));
 
@@ -119,6 +120,48 @@ var mtFile = {
 			res.status(500).send(`[mt.file.api_write] Exception: ${ex}`);
 		}
 	},
+	api_writeText(req, res) {
+		try {
+
+			// Input
+			let paramsQuery = req.query || {};
+			let filePath = paramsQuery.file || '';
+			let force = paramsQuery.force === 'true';
+
+			// Input
+			let content = req.body || '';
+
+			// Validate
+			if (filePath.length == 0) {
+				res.status(400).send('[mt.file.api_writeText] Thiếu params url "file"');
+				return;
+			}
+			if (content.length == 0) {
+				res.status(400).send('[mt.file.api_writeText] Thiếu params body');
+				return;
+			}
+
+			// Lấy folder
+			const folderPath = path.dirname(filePath);
+			if (fs.existsSync(folderPath) == false)
+				fs.mkdirSync(folderPath, { recursive: true });
+
+			// Kiểm tra file tồn tại
+			if (!force && fs.existsSync(filePath)) {
+				res.status(400).send(`[mt.file.api_writeText] Tệp "${filePath}" đã tồn tại!`);
+				return;
+			}
+
+			// Ghi file
+			fs.writeFileSync(filePath, content);
+
+			// Return
+			res.send("Thành công");
+		}
+		catch (ex) {
+			res.status(500).send(`[mt.file.api_write] Exception: ${ex}`);
+		}
+	},
 	api_register(req, res) {
 		try {
 
@@ -146,7 +189,7 @@ var mtFile = {
 				this.m_registerFolder[folder] = true;
 
 			// Response
-			res.status(200).send('Đã đăng ký đường dẫn');
+			res.send('Đã đăng ký đường dẫn');
 		}
 		catch (ex) {
 			res.status(500).send(`[mt.file.api_register] Exception: ${ex}`);
@@ -199,7 +242,7 @@ var mtFile = {
 			const folderpath = path.dirname(filepath);
 			const clientPath = path.resolve(folderpath, '../../', clientPathTmp);
 
-			res.json(clientPath);
+			res.send(clientPath);
 		}
 		catch (ex) {
 			res.status(500).send(`[mt.file.api_getClientPath] Exception: ${ex}`);
