@@ -8,6 +8,7 @@ var mtCommon = {
 		mt.server.register('POST', '/authorize', false, this.api_authorize);
 		mt.server.register('GET', '/checkToken', true, this.api_checkToken);
 		mt.server.register('GET', '/common/getIPLocal', false, this.api_getIPLocal);
+		mt.server.register('GET', '/common/getConfig', false, this.api_getConfig);
 
 	},
 
@@ -24,21 +25,19 @@ var mtCommon = {
 		try {
 			let nets = os.networkInterfaces();
 			for (let name of Object.keys(nets)) {
-				if (name.includes('Wi-Fi')) {
-					let wifi = nets[name];
-					for (let net of wifi) {
-						const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4;
-						if (net.family === familyV4Value && !net.internal) {
-							res.status(200).json(net.address);
-							return;
-						}
+				let networkName = nets[name];
+				for (let net of networkName) {
+					const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4;
+					if (net.family === familyV4Value && !net.internal) {
+						res.send(net.address);
+						return;
 					}
 				}
 			}
-			res.status(300).send("IP not found");
+			res.status(400).send("IP not found");
 		}
 		catch (e) {
-			res.status(300).send("[ERROR] "+e);
+			res.status(500).send(`[mt.common.api_getIPLocal] Exception: ${ex}`);
 		}
 	},
 	api_getConfig: function(req, res) {
@@ -46,21 +45,21 @@ var mtCommon = {
 
 			// Input
 			let params = req.query || {};
-			let name = params.name || '';
+			let key = params.key || '';
 
 			let result = null;
-			switch (name) {
-				case 'clientPath':
-					result = process.env.CLIENT_PATH;
-					break;
+			switch (key) {
+				case 'PATH_CLIENT': result = process.env.PATH_CLIENT; break;
+				case 'PATH_MUSIC': result = process.env.PATH_MUSIC; break;
+				case 'PATH_WALLPAPER': result = process.env.PATH_WALLPAPER; break;
 			}
-			if (result != null)
-				res.json(mt.config);
+			if (result != null && result.length > 0)
+				res.send(result);
 			else
-				res.status(300).send("Not found");
+				res.status(400).send(`Không tìm thấy Key ${key}`);
 		}
-		catch (e) {
-			res.status(300).send("[ERROR] "+e);
+		catch (ex) {
+			res.status(500).send(`[mt.common.api_getConfig] Exception: ${ex}`);
 		}
 	}
 

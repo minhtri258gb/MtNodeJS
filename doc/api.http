@@ -1,6 +1,6 @@
 # @host = "http://localhost:258"
-@host = "http://localhost:958"
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6Ii0xMzkzMTUzMzkzIiwiaWF0IjoxNzU0NjY0ODEyLCJleHAiOjE3NTQ2NzkyMTJ9.YzIPRY-TQU3BIVdfmy_rcUiiGBDLObxgro2QbdWtVGk
+@hosta = "http://localhost:958"
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6ImV1cm85NTgiLCJpYXQiOjE3NTU4ODQyNDMsImV4cCI6MTc1NTg5ODY0M30.aRgOvqB9JWU2JzDOiMOOQClF-0THJ1l-niCtmsWD62w
 
 ###
 
@@ -10,7 +10,7 @@ Host: localhost:958
 Content-Type: application/json
 
 {
-  "password": "euro958"
+	"password": "euro958"
 }
 
 ###
@@ -22,27 +22,26 @@ Host: localhost:258
 ###
 
 # @name database_query
-POST /database/query
-Host: localhost:958
+POST http://localhost:958/database/query
 Authorization: {{token}}
 Content-Type: application/json
 
 {
-  "database": "calendar",
-  "sql": "SELECT * FROM calendar WHERE 1 = 1"
+	"database": "calendar",
+	"sql": "SELECT * FROM calendar WHERE 1 = 1"
 }
 
 ###
 
 # @name file_list
 GET /file/list?folder=C:\Projects\MtNodeJS
-Host: localhost:258
+Host: localhost:958
 
 ###
 
 # @name file_read
 GET /file/read?file=C:\Projects\MtNodeJS\package.json
-Host: localhost:258
+Host: localhost:958
 
 ###
 
@@ -57,6 +56,24 @@ Content-Type: text/csv
 
 < C:\Users\Windows\Downloads\draft\music_202406262017.csv
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+# @name file_register
+POST /file/register
+Host: localhost:958
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+	"folder": "C:/Massan/Walpapers"
+}
+
+###
+
+# @name file_static
+GET /file/static?folder=C:\Massan\Walpapers&file=30004.jpg
+Host: localhost:958
 
 ###
 

@@ -21,6 +21,9 @@ var mtFile = {
 
 		// Support JsTree
 		mt.server.register('GET', '/file/jstree', true, (req, res) => this.api_jstree(req, res));
+
+		// Default Register
+		this.defaultRegisterFolder();
 	},
 
 	api_list(req, res) {
@@ -235,7 +238,7 @@ var mtFile = {
 		try {
 
 			// Thư mục Client
-			const clientPathTmp = process.env.CLIENT_PATH;
+			const clientPathTmp = process.env.PATH_CLIENT;
 
 			// Tìm đường dẫn thư mục gốc
 			const filepath = fileURLToPath(import.meta.url);
@@ -291,6 +294,24 @@ var mtFile = {
 		}
 		catch (ex) {
 			res.status(500).send(`[mt.file.api_jstree] Exception: ${ex}`);
+		}
+	},
+
+	defaultRegisterFolder() {
+
+		let arrayFolder = [
+			process.env.PATH_MUSIC,
+			process.env.PATH_WALLPAPER,
+		];
+
+		// Chuẩn hóa đường dẫn
+		for (let folder of arrayFolder) {
+			folder = folder.replaceAll('\\', '/'); // Thay \\ thành /
+			if (folder[folder.length-1] == '/') // Bỏ dấu / cuối
+				folder = folder.substring(0, folder.length-1);
+
+			// Đăng ký
+			this.m_registerFolder[folder] = true;
 		}
 	},
 
