@@ -300,12 +300,14 @@ var mtFile = {
 	defaultRegisterFolder() {
 
 		let arrayFolder = [
-			process.env.PATH_MUSIC,
-			process.env.PATH_WALLPAPER,
+			process.env.PATH_MUSIC || '',
+			process.env.PATH_WALLPAPER || '',
 		];
 
 		// Chuẩn hóa đường dẫn
 		for (let folder of arrayFolder) {
+			if (folder.length == 0)
+				continue;
 			folder = folder.replaceAll('\\', '/'); // Thay \\ thành /
 			if (folder[folder.length-1] == '/') // Bỏ dấu / cuối
 				folder = folder.substring(0, folder.length-1);

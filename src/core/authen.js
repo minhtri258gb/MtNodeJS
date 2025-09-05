@@ -31,9 +31,8 @@ var mtAuthen = {
 		const authHeader = req.headers['authorization'];
 
 		// Kiểm tra xem header có tồn tại và bắt đầu bằng 'Bearer '
-		if (!authHeader || !authHeader.startsWith('Bearer ')) {
+		if (!authHeader || !authHeader.startsWith('Bearer '))
 			return res.status(401).json({ message: 'Không có token hoặc token không hợp lệ' });
-		}
 
 		// Trích xuất token (bỏ phần 'Bearer ')
 		const token = authHeader.split(' ')[1];
