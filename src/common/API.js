@@ -25,6 +25,8 @@ var mtCommon = {
 		try {
 			let nets = os.networkInterfaces();
 			for (let name of Object.keys(nets)) {
+				if (name != 'Wi-Fi')
+					continue;
 				let networkName = nets[name];
 				for (let net of networkName) {
 					const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4;

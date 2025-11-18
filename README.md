@@ -16,15 +16,7 @@ Máy chủ hỗ trợ các thao tác bị giới hạn bởi Chrome, hỗ trợ 
 3. [Third Example](#third-example)
 4. [Fourth Example](#fourth-examplehttpwwwfourthexamplecom)
 
-
-asd
-asd
-asd
-asd
-sads
-ad
-
 # Tiếng việt có dấu
 # Example2
 # Third Example
-# [Fourth Example](http://www.fourthexample.com) 
+# [Fourth Example](http://www.fourthexample.com)
