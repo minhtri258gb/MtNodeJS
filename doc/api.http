@@ -1,6 +1,5 @@
-# @host = "http://localhost:258"
-@hosta = "http://localhost:958"
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6ImV1cm85NTgiLCJpYXQiOjE3NTU4ODQyNDMsImV4cCI6MTc1NTg5ODY0M30.aRgOvqB9JWU2JzDOiMOOQClF-0THJ1l-niCtmsWD62w
+@host = "http://localhost:958"
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6ImV1cm85NTgiLCJpYXQiOjE3NjM3MTQwOTUsImV4cCI6MTc2NjMwNjA5NX0.Wq-tj34tF9u4MFiDZbU-MXPr_2ib_bnttrqioiampf0
 
 ###
 
@@ -11,6 +10,19 @@ Content-Type: application/json
 
 {
 	"password": "euro958"
+}
+
+###
+
+# @name common_cmd
+POST /common/cmd
+Host: localhost:958
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+	"paths": ["D:/Apps/Nmap"],
+	"cmd": "nmap -p 8082 192.168.1.222"
 }
 
 ###

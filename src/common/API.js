@@ -1,4 +1,5 @@
 import os from 'os';
+import { exec } from 'child_process';
 
 var mtCommon = {
 
@@ -9,6 +10,7 @@ var mtCommon = {
 		mt.server.register('GET', '/checkToken', true, this.api_checkToken);
 		mt.server.register('GET', '/common/getIPLocal', false, this.api_getIPLocal);
 		mt.server.register('GET', '/common/getConfig', false, this.api_getConfig);
+		mt.server.register('POST', '/common/cmd', true, this.api_cmd);
 
 	},
 
@@ -38,7 +40,7 @@ var mtCommon = {
 			}
 			res.status(400).send("IP not found");
 		}
-		catch (e) {
+		catch (ex) {
 			res.status(500).send(`[mt.common.api_getIPLocal] Exception: ${ex}`);
 		}
 	},
@@ -63,7 +65,44 @@ var mtCommon = {
 		catch (ex) {
 			res.status(500).send(`[mt.common.api_getConfig] Exception: ${ex}`);
 		}
-	}
+	},
+	api_cmd: async function(req, res) {
+		try {
+
+			let body = req.body || {};
+			let paths = body.paths || [];
+			let cmd = body.cmd || '';
+
+			if (cmd.length == 0) {
+				res.json({ result: false, message: 'CMD trống!' });
+				return;
+			}
+
+			// Thêm vào PATH
+			let finalPath = process.env.PATH;
+			if (paths.length > 0) {
+				for (let path of paths)
+					finalPath += ';' + path;
+			}
+			const options = {
+				env: { PATH: finalPath }
+			};
+
+			let result = await new Promise((resolve, reject) => {
+				exec(cmd, options, (error, stdout, stderr) => {
+					if (error)
+						reject(error);
+					else
+						resolve({ stdout, stderr });
+				});
+			});
+
+			res.json(result);
+		}
+		catch (ex) {
+			res.status(500).send(`[mt.common.api_cmd] Exception: ${ex}`);
+		}
+	},
 
 };
 export default mtCommon;
