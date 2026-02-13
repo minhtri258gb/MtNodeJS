@@ -1,19 +1,14 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
 var mtApps = {
 
 	async register() {
 
-		const __filename = fileURLToPath(import.meta.url);
-		const __dirname = path.dirname(__filename);
-		const rootPath = path.dirname(__dirname);
+		const rootPath = path.join(process.cwd(), 'src');
 
 		// Khai báo hàm đăng ký
 		let register = async (name) => {
-
-			// mt.server.register('GET', "/"+name+'/init', (req, res) => {
 
 				const apiPath = path.join(rootPath, name, 'API.js');
 
@@ -39,10 +34,6 @@ var mtApps = {
 				}
 				else
 					console.warn(`[ERROR] Addon tại ${apiPath} không có hàm register`);
-
-				// res.json(true);
-				//res.sendFile(mt.lib.path.resolve(__dirname+"/../../"+mt.config.client_path+name+"/"+"index.html"));
-			// });
 		}
 
 		const folders = await fs.readdir(rootPath, { withFileTypes: true });

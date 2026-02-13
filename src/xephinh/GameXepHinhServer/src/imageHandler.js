@@ -1,5 +1,5 @@
-const math = require("mathjs");
-const Jimp = require('jimp');
+import * as math from 'mathjs';
+import * as Jimp from 'jimp';
 
 module.exports = {
 	split: function(filepath, numPart) {

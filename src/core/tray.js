@@ -29,12 +29,12 @@ var mtTray = {
 			},
 			debug: false,
 			copyDir: false,
-		})
+		});
 
 		// Register onClick item
 		this.c_systray.onClick(action => {
 			this.menus[action.seq_id].onClick(action);
-		})
+		});
 	},
 
 	initMenu() {
@@ -45,9 +45,7 @@ var mtTray = {
 	},
 
 	loadIcon() {
-		const __filename = fileURLToPath(import.meta.url);
-		const __dirname = path.dirname(__filename);
-		let filepath = path.resolve(__dirname, '../../res/logo.ico');
+		let filepath = path.resolve(process.cwd(), './res/logo.ico');
 		let data = fs.readFileSync(filepath);
 		return data.toString('base64');
 	},

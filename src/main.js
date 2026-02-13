@@ -26,6 +26,9 @@ var mtMain = {
 			global.mt = this;
 			// globalThis.mt = this;
 
+			// Đọc biến môi trường
+			dotenv.config();
+
 			// Xử lý args
 			for (let arg of process.argv) {
 				if (!arg.startsWith('-'))
@@ -33,13 +36,12 @@ var mtMain = {
 				if (arg == '-debug')
 					this.config.debug = true;
 			}
+			if (process.env.DEBUG == 'true')
+				this.config.debug = true;
 
 			// Ẩn console
-			if (!this.config.debug)
+			if (process.env.HIDE_CONSOLE == 'true')
 				this.util.hiddenConsole(true);
-
-			// Đọc biến môi trường
-			dotenv.config();
 
 			// Server Setup
 			this.server.setup();
@@ -59,7 +61,7 @@ var mtMain = {
 			// });
 
 			// Tray icon
-			if (!this.config.debug)
+			if (process.env.TRAY_ICON == 'true')
 				this.tray.init();
 		}
 		catch (e) {

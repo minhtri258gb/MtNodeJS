@@ -14,6 +14,26 @@
 			"label": "Start REL",
 			"type": "shell",
 			"command": "node src/main",
-		}
+		},
+		{
+			"label": "Bundle",
+			"type": "shell",
+			"command": "npx esbuild src/main.js --bundle --platform=node --target=node16 --outfile=dist/bundle.js",
+			"options": {
+				"env": {
+					"PATH": "D:/Apps/NodeJS/node-v16.20.2;${env:PATH}"
+				}
+			}
+		},
+		{
+			"label": "Package",
+			"type": "shell",
+			"command": "pkg . -t node16-win-x64 -o main.exe",
+			"options": {
+				"env": {
+					"PATH": "D:/Apps/NodeJS/node-v16.20.2;${env:PATH}"
+				}
+			}
+		},
 	]
 }

@@ -1,5 +1,5 @@
 @host = "http://localhost:958"
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6ImV1cm85NTgiLCJpYXQiOjE3NjM3MTQwOTUsImV4cCI6MTc2NjMwNjA5NX0.Wq-tj34tF9u4MFiDZbU-MXPr_2ib_bnttrqioiampf0
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6Imd1ZXN0IiwiaWF0IjoxNzcwOTcwODEzLCJleHAiOjE3NzM1NjI4MTN9.ngqfXufYIDZtYavTYOyOj0KV9KjvrhW_ZD3prgoYklo
 
 ###
 
@@ -86,6 +86,20 @@ Content-Type: application/json
 # @name file_static
 GET /file/static?folder=C:\Massan\Walpapers&file=30004.jpg
 Host: localhost:958
+
+###
+
+# @name notify_send
+POST /notify/send
+Host: localhost:958
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+	"title": "Thông báo kiểm thử",
+	"body": "Test notification",
+	"url": "/map"
+}
 
 ###
 

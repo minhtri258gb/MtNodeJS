@@ -4,7 +4,8 @@
 	"description": "",
 	"author": "Massan",
 	"license": "ISC",
-	"main": "src/index.js",
+	"main": "src/main.js",
+	"bin": "dist/bundle.js",
 	"type": "module",
 	"scripts": {
 		"start": "nodemon src/development",
@@ -16,6 +17,8 @@
 		"dotenv": "^16.5.0",
 		"express": "^5.1.0",
 		"fs": "0.0.1-security",
+		"jimp": "^1.6.0",
+		"jsdom": "^27.4.0",
 		"jsonwebtoken": "^9.0.2",
 		"local-devices": "^3.0.0",
 		"mathjs": "^14.4.0",
@@ -24,6 +27,19 @@
 		"socket.io": "^4.7.1",
 		"sqlite-sync": "^0.3.7",
 		"systray": "^1.0.5",
-		"terser": "^5.19.2"
+		"terser": "^5.19.2",
+		"three": "^0.182.0",
+		"web-push": "^3.6.7"
+	},
+	"devDependencies": {
+		"esbuild": "^0.27.2"
+	},
+	"pkg": {
+		"scripts": "dist/bundle.js",
+		"assets": [
+			"package.json",
+			"res/**/*",
+			"tools/**/*"
+		]
 	}
 }

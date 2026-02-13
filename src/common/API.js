@@ -47,16 +47,17 @@ var mtCommon = {
 	api_getConfig: function(req, res) {
 		try {
 
+			// Const
+			const validKey = ['PATH_CLIENT','PATH_MUSIC','PATH_WALLPAPER','VAPID_PUBLIC_KEY'];
+
 			// Input
 			let params = req.query || {};
 			let key = params.key || '';
 
 			let result = null;
-			switch (key) {
-				case 'PATH_CLIENT': result = process.env.PATH_CLIENT; break;
-				case 'PATH_MUSIC': result = process.env.PATH_MUSIC; break;
-				case 'PATH_WALLPAPER': result = process.env.PATH_WALLPAPER; break;
-			}
+			if (validKey.includes(key))
+				result = process.env[key];
+
 			if (result != null && result.length > 0)
 				res.send(result);
 			else
@@ -97,9 +98,12 @@ var mtCommon = {
 				});
 			});
 
-			res.json(result);
+			mt.config.debug && console.log('[mt.common.api_cmd]', { cmd, result }); // Log
+
+			res.json(result); // Response
 		}
 		catch (ex) {
+			mt.config.debug && console.error('[mt.common.api_cmd]', { ex }); // Log
 			res.status(500).send(`[mt.common.api_cmd] Exception: ${ex}`);
 		}
 	},
