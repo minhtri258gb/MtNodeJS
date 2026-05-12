@@ -1,11 +1,10 @@
-@host = "http://localhost:958"
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6Imd1ZXN0IiwiaWF0IjoxNzcwOTcwODEzLCJleHAiOjE3NzM1NjI4MTN9.ngqfXufYIDZtYavTYOyOj0KV9KjvrhW_ZD3prgoYklo
+@host = http://localhost:958
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZCI6ImV1cm85NTgiLCJpYXQiOjE3NzQ5MzMxNzgsImV4cCI6MTc3NzUyNTE3OH0.kmPNwwEAtaon-Gg_b8MqO5Xdej-mlMHfY1BAsSu-IXk
 
 ###
 
 # @name Authentication
-POST /authorize
-Host: localhost:958
+POST {{host}}/authorize
 Content-Type: application/json
 
 {
@@ -28,6 +27,12 @@ Authorization: {{token}}
 ###
 
 # @name common_getIPLocal
+GET /common/getConfig?key=PATH_DOC
+Host: localhost:958
+
+###
+
+# @name common_getENV
 GET /common/getIPLocal
 Host: localhost:258
 
@@ -46,8 +51,8 @@ Content-Type: application/json
 ###
 
 # @name file_list
-GET /file/list?folder=C:\Projects\MtNodeJS
-Host: localhost:958
+GET {{host}}/file/list?folder=D:\Projects\MtClient\res\midi
+Authorization: Bearer {{token}}
 
 ###
 

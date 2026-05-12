@@ -10,20 +10,21 @@ var mtAuthen = {
 		const salt = '-1393153393';
 		const hashPW = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
 
-		const result = (
-			hashPW === 'cfc4169ff17813f0413ca274eca9d339f36a5dc372ac2d3f19d177371e10da00ebaa37980a9f399ab04da6ecdf654340cb0a306e205a067763ea55945beb7188'
-			|| hashPW === 'e9dec475f5d77dbb221d209e364522a43a74e5de42c4e5caa3ae2313c308c5408703c7bbc566bf90485a4a4485e83434df9aed82138a06121be10666bb1ed198'
-		);
+		let username = 'None';
+		if (hashPW === 'cfc4169ff17813f0413ca274eca9d339f36a5dc372ac2d3f19d177371e10da00ebaa37980a9f399ab04da6ecdf654340cb0a306e205a067763ea55945beb7188')
+			username = 'Massan';
+		else if (hashPW === 'e9dec475f5d77dbb221d209e364522a43a74e5de42c4e5caa3ae2313c308c5408703c7bbc566bf90485a4a4485e83434df9aed82138a06121be10666bb1ed198')
+			username = 'Guest';
 
 		this.m_accessToken = '';
-		if (result) {
-			let payload = { password };
+		if (username != 'None') {
+			let payload = { password, username };
 			this.m_accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
 				expiresIn: this.h_tokenExpireTime,
 			});
 		}
 
-		return this.m_accessToken;
+		return { token: this.m_accessToken, username };
 	},
 	check(token) {
 		return (token == this.m_accessToken);

@@ -11,17 +11,16 @@ var mtCommon = {
 		mt.server.register('GET', '/common/getIPLocal', false, this.api_getIPLocal);
 		mt.server.register('GET', '/common/getConfig', false, this.api_getConfig);
 		mt.server.register('POST', '/common/cmd', true, this.api_cmd);
-
 	},
 
 	api_authorize: function(req, res) {
 		let body = req.body || {};
 		let password = body.password || '';
-		let token = mt.authen.accessToken(password);
-		res.json({ result: token.length > 0, token });
+		let result = mt.authen.accessToken(password);
+		res.json({ result: result.token.length > 0, ...result });
 	},
 	api_checkToken: function(req, res) {
-		res.json({ result: true });
+		res.json({ result: true, username: req.user.username });
 	},
 	api_getIPLocal: function(req, res) {
 		try {
@@ -48,7 +47,7 @@ var mtCommon = {
 		try {
 
 			// Const
-			const validKey = ['PATH_CLIENT','PATH_MUSIC','PATH_WALLPAPER','VAPID_PUBLIC_KEY'];
+			const validKey = ['PATH_CLIENT','PATH_MUSIC','PATH_WALLPAPER','PATH_DOC','VAPID_PUBLIC_KEY'];
 
 			// Input
 			let params = req.query || {};
