@@ -47,15 +47,16 @@ var mtCommon = {
 		try {
 
 			// Const
-			const validKey = ['PATH_CLIENT','PATH_MUSIC','PATH_WALLPAPER','PATH_DOC','VAPID_PUBLIC_KEY'];
+			const validKey = ['VAPID_PUBLIC_KEY'];
 
 			// Input
 			let params = req.query || {};
 			let key = params.key || '';
 
 			let result = null;
-			if (validKey.includes(key))
+			if (key.startsWith('PATH_') || validKey.includes(key)) {
 				result = process.env[key];
+			}
 
 			if (result != null && result.length > 0)
 				res.send(result);

@@ -29,11 +29,13 @@
 			"label": "Package",
 			"type": "shell",
 			"command": "pkg . -t node16-win-x64 -o main.exe",
-			"options": {
-				"env": {
-					"PATH": "D:/Apps/NodeJS/node-v16.20.2;${env:PATH}"
-				}
-			}
+			"options": { "env": { "PATH": "D:/Apps/NodeJS/node-v16.20.2;${env:PATH}" }}
+		},
+		{
+			"label": "Git Sync",
+			"type": "shell",
+			"command": "TortoiseGitProc /command:sync /path:.",
+			"options": { "env": { "PATH": "D:/Apps/TortoiseGit/bin;${env:PATH}" }}
 		},
 	]
 }
