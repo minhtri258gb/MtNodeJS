@@ -51,6 +51,8 @@ var mtAuthen = {
 			return res.status(403).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
 		}
 	},
-
+	checkOrigin() {
+		// #TODO
+	},
 };
 export default mtAuthen;

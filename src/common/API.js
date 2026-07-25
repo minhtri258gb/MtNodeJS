@@ -8,8 +8,8 @@ var mtCommon = {
 		// API
 		mt.server.register('POST', '/authorize', false, this.api_authorize);
 		mt.server.register('GET', '/checkToken', true, this.api_checkToken);
-		mt.server.register('GET', '/common/getIPLocal', false, this.api_getIPLocal);
-		mt.server.register('GET', '/common/getConfig', false, this.api_getConfig);
+		mt.server.register('GET', '/api/info-ip', false, this.api_getIPLocal);
+		mt.server.register('GET', '/api/config-get', false, this.api_getConfig);
 		mt.server.register('POST', '/common/cmd', true, this.api_cmd);
 	},
 

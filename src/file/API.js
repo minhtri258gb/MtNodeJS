@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import Busboy from 'busboy';
 
 var mtFile = {
@@ -9,12 +8,12 @@ var mtFile = {
 	register() {
 
 		// General
-		mt.server.register('GET', '/file/list', true, (req, res) => this.api_list(req, res));
-		mt.server.register('GET', '/file/read', true, (req, res) => this.api_read(req, res));
-		mt.server.register('POST', '/file/write', true, (req, res) => this.api_write(req, res));
-		mt.server.register('POST', '/file/writeText', true, (req, res) => this.api_writeText(req, res));
+		mt.server.register('GET',  '/api/file-list', false, (req, res) => this.api_list(req, res));
+		mt.server.register('GET',  '/api/file-read', false, (req, res) => this.api_read(req, res));
+		mt.server.register('POST', '/api/file-write', false, (req, res) => this.api_write(req, res));
+		mt.server.register('POST', '/api/file-writeText', false, (req, res) => this.api_writeText(req, res));
 		mt.server.register('POST', '/file/register', true, (req, res) => this.api_register(req, res));
-		mt.server.register('GET', '/file/static', false, (req, res) => this.api_static(req, res));
+		mt.server.register('GET',  '/file/static', false, (req, res) => this.api_static(req, res));
 
 		// System
 		mt.server.register('GET', '/file/getClientPath', true, (req, res) => this.api_getClientPath(req, res));
@@ -68,19 +67,22 @@ var mtFile = {
 
 			// Input
 			let params = req.query || {};
-			let filepath = params.file || '';
+			let folder = params.folder || '';
+			let file = params.file || '';
+
+			let fullpath = path.join(folder, file);
 
 			// Validate
-			if (filepath.length == 0) {
-				res.status(400).send('[mt.file.api_read] Thiếu params "file"');
+			if (fullpath.length == 0) {
+				res.status(400).send('Thiếu params "file"');
 				return;
 			}
 
 			// Gửi trực tiếp
-			res.sendFile(filepath);
+			res.sendFile(fullpath);
 		}
 		catch (ex) {
-			res.status(500).send(`[mt.file.api_read] Exception: ${ex}`);
+			res.status(500).send(ex.message);
 		}
 	},
 	api_write(req, res) {
@@ -129,7 +131,7 @@ var mtFile = {
 			// Input
 			let paramsQuery = req.query || {};
 			let filePath = paramsQuery.file || '';
-			let force = paramsQuery.force === 'true';
+			let confirm = paramsQuery.confirm === 'true';
 
 			// Input
 			let content = req.body || '';
@@ -150,7 +152,7 @@ var mtFile = {
 				fs.mkdirSync(folderPath, { recursive: true });
 
 			// Kiểm tra file tồn tại
-			if (!force && fs.existsSync(filePath)) {
+			if (!confirm && fs.existsSync(filePath)) {
 				res.status(400).send(`[mt.file.api_writeText] Tệp "${filePath}" đã tồn tại!`);
 				return;
 			}
@@ -159,7 +161,7 @@ var mtFile = {
 			fs.writeFileSync(filePath, content);
 
 			// Return
-			res.send("Thành công");
+			res.send('Thành công');
 		}
 		catch (ex) {
 			res.status(500).send(`[mt.file.api_write] Exception: ${ex}`);
@@ -232,23 +234,6 @@ var mtFile = {
 		}
 		catch (ex) {
 			res.status(500).send(`[mt.file.api_static] Exception: ${ex}`);
-		}
-	},
-	api_getClientPath(req, res) {
-		try {
-
-			// Thư mục Client
-			const clientPathTmp = process.env.PATH_CLIENT;
-
-			// Tìm đường dẫn thư mục gốc
-			const filepath = fileURLToPath(import.meta.url);
-			const folderpath = path.dirname(filepath);
-			const clientPath = path.resolve(folderpath, '../../', clientPathTmp);
-
-			res.send(clientPath);
-		}
-		catch (ex) {
-			res.status(500).send(`[mt.file.api_getClientPath] Exception: ${ex}`);
 		}
 	},
 	api_jstree(req, res) {

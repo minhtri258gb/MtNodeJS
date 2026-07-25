@@ -28,6 +28,7 @@ var mtMain = {
 
 			// Đọc biến môi trường
 			dotenv.config();
+			process.env.PATH_SERVER = process.cwd().replaceAll('\\', '/');
 
 			// Xử lý args
 			for (let arg of process.argv) {
